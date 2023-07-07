@@ -34,7 +34,7 @@ FOREIGN KEY (ph_br_code) REFERENCES branch (br_code)
 ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE TABLE driver(
-drv_AT char(10) NOT NULL,
+drv_AT CHAR(10) NOT NULL,
 drv_license ENUM('A','B','C','D') NOT NULL,
 drv_route ENUM('LOCAL','ABROAD') NOT NULL,
 drv_experience TINYINT(4) DEFAULT 0,
@@ -119,6 +119,37 @@ ev_descr TEXT,
 PRIMARY KEY(ev_tr_id,ev_start),
 FOREIGN KEY(ev_tr_id) REFERENCES trip (tr_id) 
 ON DELETE CASCADE ON UPDATE CASCADE);
+
+/* Μπορούμε να έχουμε πάνω απο έναν IT την ίδια χρονική περίοδο */
+/* end_date είναι για όσους έχουν φύγει απο το πρακτορείο */
+CREATE TABLE IT(
+IT_AT CHAR(10) NOT NULL,
+password VARCHAR(10) DEFAULT 'password' NOT NULL,
+start_date DATETIME NOT NULL,
+end _date DATETIME,
+PRIMARY KEY(IT_AT),
+FOREIGN KEY(IT_AT) REFERENCES worker (wrk_AT)
+ON DELETE CASCADE ON UPDATE CASCADE);
+
+CREATE TABLE offers(
+offer_code INT(10) NOT NULL AUTO INCREMENT,
+from_date DATETIME NOT NULL,
+to_date DATETIME NOT NULL,
+cost_per_person FLOAT(7,2) NOT NULL,
+destination_id INT(11) NOT NULL,
+PRIMARY KEY (offer_code),
+FOREIGN KEY (destination_id) REFERENCES destination (dst_id)
+ON DELETE CASCADE ON UPDATE CASCADE); 
+
+CREATE TABLE reservation_offers(
+res_offer_code INT(12) NOT NULL,
+cust_name VARCHAR(20) NOT NULL,
+cust_lname VARCHAR(20) NOT NULL,
+advance_fee FLOAT(7,2) NOT NULL,
+trip_offer_code INT(10) NOT NULL,
+PRIMARY KEY(res_offer_code),
+FOREIGN KEY (trip_offer_code) REFERENCES offers (offer_code)
+ON DELETE CASCADE ON UPDATE CASCADE); 
 
 # INSERT INTO TABLES
 INSERT INTO branch VALUES
