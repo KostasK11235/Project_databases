@@ -1,0 +1,34 @@
+3.1.3.1 Procedure for inserting new driver
+DELIMITER  $
+CREATE PROCEDURE newDriver(IN dr_id CHAR(10), IN dr_name VARCHAR(20), IN dr_lname VARCHAR(20), IN salary FLOAT(7,2), IN licence ENUM('A','B','C','D'), IN route ENUM('LOCAL','ABROAD'), IN exp TINYINT(4))
+BEGIN
+DECLARE drivers_id CHAR(10);
+DECLARE target_branch INT(11);
+
+SELECT d.drv_AT INTO drivers_id FROM driver AS d WHERE d.drv_AT=dr_id;
+IF (drivers_id LIKE 'AT%') THEN
+SELECT 'DRIVER ALREADY EXISTS';
+ELSEIF (drivers_id is NULL) THEN
+SELECT subquery.wrk_br_code INTO target_branch
+FROM (SELECT w.wrk_br_code, COUNT(*) AS num_drivers FROM driver AS d INNER JOIN worker AS w ON d.drv_AT=w.wrk_AT GROUP BY w.wrk_br_code ORDER BY num_drivers ASC,w.wrk_br_code ASC LIMIT 1) AS subquery;
+	IF (target_branch is NULL) THEN
+	SELECT 'ERROR';
+	ELSE
+	INSERT INTO worker VALUES (dr_id,dr_name,dr_lname,salary,target_branch);
+	INSERT INTO driver VALUES (dr_id,licence,route,exp);
+	END IF;
+END IF;
+END$
+DELIMITER ;
+
+/* Testing code */
+CALL newDriver('AT073','Nikos','Kapolas',5000.50,'A','ABROAD',14);
+
+SELECT w.wrk_br_code,count(*) AS num_drivers FROM driver AS d
+INNER JOIN worker AS w ON d.drv_AT=w.wrk_AT GROUP BY w.wrk_br_code ORDER BY num_drivers ASC;
+
+SELECT w.wrk_br_code,count(*) 
+FROM driver AS d INNER JOIN worker AS w ON d.drv_AT=w.wrk_AT GROUP BY w.wrk_br_code ORDER BY  ASC LIMIT 1;
+
+drop procedure newDriver;
+delete from worker where wrk_AT='AT072';
