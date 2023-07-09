@@ -145,8 +145,8 @@ CREATE TABLE reservation_offers(
 res_offer_code INT(12) NOT NULL,
 cust_name VARCHAR(20) NOT NULL,
 cust_lname VARCHAR(20) NOT NULL,
-advance_fee FLOAT(7,2) NOT NULL,
 trip_offer_code INT(10) NOT NULL,
+advance_fee FLOAT(7,2) NOT NULL,
 PRIMARY KEY(res_offer_code),
 FOREIGN KEY (trip_offer_code) REFERENCES offers (offer_code)
 ON DELETE CASCADE ON UPDATE CASCADE); 
