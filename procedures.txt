@@ -87,7 +87,10 @@ DELIMITER ;
 
 3.1.3.4
 α)
-/* Without indexing: Query OK, 0 rows affected (29.557 sec) */
+/* Without indexing:
+call get_Res_Offers_Names(50,100);
+Query OK, 0 rows affected (34.730 sec)
+ */
 DELIMITER $
 CREATE PROCEDURE get_Res_Offers_Names(IN from_amount FLOAT(7,2),IN to_amount FLOAT(7,2))
 BEGIN
@@ -175,3 +178,10 @@ DROP PROCEDURE get_trip_info;
 3.1.3.3
 SELECT w.wrk_AT,w.wrk_name,w.wrk_lname,a.adm_type FROM worker AS w
 INNER JOIN admin AS a ON a.adm_AT=w.wrk_AT;
+
+/* Important */
+EXPLAIN call get_Res_offers_names(50,70);
+
+show index from reservation_offers;
+
+alter table reservation_offers drop index idx_advance_fee;
