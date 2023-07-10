@@ -85,6 +85,75 @@ BEGIN
 END$
 DELIMITER ;
 
+3.1.3.4
+α)
+/* Without indexing: Query OK, 0 rows affected (29.557 sec) */
+DELIMITER $
+CREATE PROCEDURE get_Res_Offers_Names(IN from_amount FLOAT(7,2),IN to_amount FLOAT(7,2))
+BEGIN
+DECLARE first_name VARCHAR(20);
+DECLARE last_name VARCHAR(20);
+DECLARE finishedFlag INT;
+
+DECLARE namesCursor CURSOR FOR
+	SELECT cust_name,cust_lname FROM reservation_offers WHERE advance_fee>=from_amount AND advance_fee<=to_amount;
+
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedFlag=1;
+
+OPEN namesCursor;
+SET finishedFlag=0;
+FETCH namesCursor INTO first_name,last_name;
+
+WHILE(finishedFlag=0) DO
+	SELECT first_name AS 'First Name',last_name AS 'Last Name';
+	FETCH namesCursor INTO first_name,last_name;
+END WHILE;
+CLOSE namesCursor;
+END$
+DELIMITER ;
+
+β)
+/* Without indexing: Query OK, 1 row affected (0.062 sec) */
+DELIMITER $
+CREATE PROCEDURE get_Offers_Participation(IN last_name VARCHAR(20))
+BEGIN
+DECLARE counter INT;
+DECLARE name VARCHAR(20);
+DECLARE lname VARCHAR(20);
+DECLARE trip_code INT(10);
+DECLARE no_participants INT;
+DECLARE finishedFlag INT;
+
+DECLARE personCursor CURSOR FOR
+	SELECT count(*),trip_offer_code FROM reservation_offers WHERE cust_lname=last_name GROUP BY trip_offer_code;
+
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedFlag=1;
+
+SELECT COUNT(*) INTO counter 
+FROM reservation_offers 
+WHERE cust_lname=last_name GROUP BY cust_lname;
+
+IF counter>1 THEN
+	OPEN personCursor;
+	SET finishedFlag=0;
+	FETCH personCursor INTO no_participants,trip_code;
+	
+	WHILE (finishedFlag=0) DO
+		SELECT no_participants AS '#Customers with that last name',trip_code AS 'Trip Offer Code';
+		FETCH personCursor INTO no_participants,trip_code;
+	END WHILE;
+	CLOSE personCursor;
+ELSE
+	SELECT cust_name,cust_lname,trip_offer_code 
+	INTO name,lname,trip_code
+	FROM reservation_offers
+	WHERE cust_lname=last_name;
+	
+	SELECT name AS 'Customer Name',lname AS 'Customer Last Name',trip_code AS 'Trip Offer Code';
+END IF;
+END$
+DELIMITER ;
+
 
 /* Testing code */
 3.1.3.1
