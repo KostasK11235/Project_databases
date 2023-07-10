@@ -32,7 +32,6 @@ for i in range(5):
 
 # add the index, trip_offer_code and deposit amount in the names of the list
 mod_list = []
-deposit = [50, 100, 150, 200]
 for index, sublist in enumerate(full_list, start=1):
     mod_sublist = [index] + sublist
 
@@ -44,7 +43,7 @@ for index, sublist in enumerate(full_list, start=1):
         trip_offer_code = 8003
 
     mod_sublist.append(trip_offer_code)
-    mod_sublist.append(random.choice(deposit))
+    mod_sublist.append(random.randint(50, 200))
 
     mod_list.append(mod_sublist)
 
