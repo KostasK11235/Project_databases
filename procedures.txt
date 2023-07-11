@@ -179,6 +179,48 @@ DROP PROCEDURE get_trip_info;
 SELECT w.wrk_AT,w.wrk_name,w.wrk_lname,a.adm_type FROM worker AS w
 INNER JOIN admin AS a ON a.adm_AT=w.wrk_AT;
 
+DELIMITER $
+
+CREATE PROCEDURE example(IN first FLOAT,IN sec FLOAT)
+BEGIN
+SELECT cust_name,cust_lname FROM reservation_offers
+WHERE advance_fee BETWEEN first AND sec;
+END$
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE GetCustomersByLastName(
+  IN input_last_name VARCHAR(20)
+)
+BEGIN
+  DECLARE total_count INT;
+  
+  EXPLAIN
+  SELECT COUNT(*) INTO total_count
+  FROM reservation_offers
+  WHERE cust_lname = input_last_name
+  GROUP BY cust_lname;
+  select 'kappa';
+  IF total_count IS NULL THEN
+    select 'kappa';
+    EXPLAIN
+    SELECT cust_name, cust_lname, trip_offer_code
+    FROM reservation_offers
+    WHERE cust_lname = input_last_name;
+  ELSE
+    select 'kappa';
+    EXPLAIN
+    SELECT trip_offer_code, COUNT(*) AS total_people
+    FROM reservation_offers
+    WHERE cust_lname = input_last_name
+    GROUP BY trip_offer_code;
+  END IF;
+
+END //
+
+DELIMITER ;
+
 /* Important */
 EXPLAIN call get_Res_offers_names(50,70);
 
