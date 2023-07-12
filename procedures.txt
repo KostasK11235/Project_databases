@@ -91,6 +91,17 @@ DELIMITER ;
 call get_Res_Offers_Names(50,100);
 Query OK, 0 rows affected (34.730 sec)
  */
+
+DELIMITER $
+CREATE PROCEDURE get_Res_Offers_Names(IN from_amount FLOAT,IN to_amount FLOAT)
+BEGIN
+	SELECT cust_name AS 'Customer Name',cust_lname AS 'Customer Last Name'
+	FROM reservation_offers
+	WHERE advance_fee>=from_amount AND advance_fee<=to_amount
+END $
+
+DELIMITER ;
+
 DELIMITER $
 CREATE PROCEDURE get_Res_Offers_Names(IN from_amount FLOAT(7,2),IN to_amount FLOAT(7,2))
 BEGIN
@@ -117,6 +128,36 @@ DELIMITER ;
 
 β)
 /* Without indexing: Query OK, 1 row affected (0.062 sec) */
+
+
+DELIMITER $
+
+CREATE PROCEDURE get_Offers_Participation(IN input_last_name VARCHAR(20))
+BEGIN
+  DECLARE total_count INT;
+  
+  EXPLAIN
+  SELECT COUNT(*) INTO total_count
+  FROM reservation_offers
+  WHERE cust_lname = input_last_name
+  GROUP BY cust_lname;
+  IF total_count IS NULL THEN
+    EXPLAIN
+    SELECT cust_name, cust_lname, trip_offer_code
+    FROM reservation_offers
+    WHERE cust_lname = input_last_name;
+  ELSE
+    EXPLAIN
+    SELECT trip_offer_code, COUNT(*) AS total_people
+    FROM reservation_offers
+    WHERE cust_lname = input_last_name
+    GROUP BY trip_offer_code;
+  END IF;
+
+END $
+
+DELIMITER ;
+
 DELIMITER $
 CREATE PROCEDURE get_Offers_Participation(IN last_name VARCHAR(20))
 BEGIN
@@ -188,38 +229,6 @@ WHERE advance_fee BETWEEN first AND sec;
 END$
 DELIMITER ;
 
-DELIMITER //
-
-CREATE PROCEDURE GetCustomersByLastName(
-  IN input_last_name VARCHAR(20)
-)
-BEGIN
-  DECLARE total_count INT;
-  
-  EXPLAIN
-  SELECT COUNT(*) INTO total_count
-  FROM reservation_offers
-  WHERE cust_lname = input_last_name
-  GROUP BY cust_lname;
-  select 'kappa';
-  IF total_count IS NULL THEN
-    select 'kappa';
-    EXPLAIN
-    SELECT cust_name, cust_lname, trip_offer_code
-    FROM reservation_offers
-    WHERE cust_lname = input_last_name;
-  ELSE
-    select 'kappa';
-    EXPLAIN
-    SELECT trip_offer_code, COUNT(*) AS total_people
-    FROM reservation_offers
-    WHERE cust_lname = input_last_name
-    GROUP BY trip_offer_code;
-  END IF;
-
-END //
-
-DELIMITER ;
 
 /* Important */
 EXPLAIN call get_Res_offers_names(50,70);
