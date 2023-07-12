@@ -1,0 +1,54 @@
+3.1.4.3
+DELIMITER $
+
+CREATE TRIGGER prevent_trip_update
+BEFORE UPDATE ON trip
+FOR EACH ROW
+BEGIN
+	DECLARE res_count INT;
+	DECLARE trip_id INT(11);
+
+	SELECT tr_id INTO trip_id 
+	FROM trip 
+	WHERE tr_departure=OLD.tr_departure;
+
+	SELECT count(*) INTO res_count
+	FROM reservation
+	WHERE res_tr_id=trip_id;
+
+	IF res_count>0 THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT='Can not update trip. Reservations already exists.';
+	END IF;
+END $
+
+3.1.4.4
+DELIMITER $
+
+CREATE TRIGGER prevent_salary_reduction
+BEFORE UPDATE ON worker
+FOR EACH ROW
+BEGIN
+	DECLARE salary FLOAT(7,2);
+	DECLARE finishedFlag INT;
+
+	DECLARE salaryCursor CURSOR FOR
+		SELECT wrk_salary FROM worker WHERE wrk_salary=OLD.wrk_salary;
+	
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedFlag=1;
+	
+	OPEN salaryCursor;
+	SET finishedFlag=0;
+
+	FETCH salaryCursor INTO salary;
+	WHILE (finishedFlag=0) DO
+		IF (NEW.wrk_salary<salary) THEN
+			SIGNAL SQLSTATE '45000'
+				SET MESSAGE_TEXT='Can not reduce worker salary.';
+		END IF;
+		FETCH salaryCursor INTO salary;
+	END WHILE;
+	CLOSE salaryCursor;
+END$
+
+DELIMITER ;

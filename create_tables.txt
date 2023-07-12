@@ -66,6 +66,7 @@ tr_br_code INT(11) NOT NULL,
 tr_gui_AT CHAR(10) NOT NULL,
 tr_drv_AT CHAR(10) NOT NULL,
 PRIMARY KEY(tr_id),
+UNIQUE (tr_return, tr_departure),
 FOREIGN KEY(tr_br_code) REFERENCES branch (br_code)
 ON DELETE CASCADE ON UPDATE CASCADE,
 FOREIGN KEY(tr_gui_AT) REFERENCES guide (gui_AT)
@@ -151,3 +152,11 @@ PRIMARY KEY(res_offer_code),
 FOREIGN KEY (trip_offer_code) REFERENCES offers (offer_code)
 ON DELETE CASCADE ON UPDATE CASCADE); 
 
+CREATE TABLE IT_logs(
+log_id INT AUTO_INCREMENT,
+IT_id CHAR(10) NOT NULL, 
+action VARCHAR(255),
+log_data DATETIME,
+PRIMARY KEY (log_id),
+FOREIGN KEY (IT_id) REFERENCES IT (IT_AT)
+ON DELETE NO ACTION ON UPDATE NO ACTION);
