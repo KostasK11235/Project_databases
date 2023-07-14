@@ -152,6 +152,9 @@ PRIMARY KEY(res_offer_code),
 FOREIGN KEY (trip_offer_code) REFERENCES offers (offer_code)
 ON DELETE CASCADE ON UPDATE CASCADE); 
 
+CREATE INDEX money ON reservation_offers(advance_fee);
+CREATE INDEX idx_cust_lname ON reservation_offers(cust_lname);
+
 CREATE TABLE IT_logs(
 log_id INT AUTO_INCREMENT,
 IT_id CHAR(10) NOT NULL, 
