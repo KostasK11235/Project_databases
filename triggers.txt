@@ -1,4 +1,18 @@
-3.1.4.3
+3.1.4.1
+DELIMITER $
+
+CREATE TRIGGER trip_insert_log
+BEFORE INSERT ON trip
+FOR EACH ROW
+BEGIN 
+	INSERT INTO it_logs(IT_id,action,log_date) VALUES
+	('AT051','INSERT',NOW());
+END$
+
+DELIMITER ;
+
+
+3.1.4.2
 DELIMITER $
 
 CREATE TRIGGER prevent_trip_update
@@ -22,7 +36,7 @@ BEGIN
 	END IF;
 END $
 
-3.1.4.4
+3.1.4.2
 DELIMITER $
 
 CREATE TRIGGER prevent_salary_reduction
