@@ -5,120 +5,120 @@ CREATE TRIGGER trip_insert_log
 BEFORE INSERT ON trip
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'INSERT into trip',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'INSERT','trip',NOW());
 END$
 
 CREATE TRIGGER trip_update_log
 BEFORE UPDATE ON trip
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'UPDATE trip',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'UPDATE','trip',NOW());
 END$
 
 CREATE TRIGGER trip_delete_log
 BEFORE DELETE ON trip
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'DELETE from trip',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'DELETE','trip',NOW());
 END$
 
 CREATE TRIGGER reservation_insert_log
 BEFORE INSERT ON reservation
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'INSERT into reservation',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'INSERT','reservation',NOW());
 END$
 
 CREATE TRIGGER reservation_update_log
 BEFORE UPDATE ON reservation
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'UPDATE reservation',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'UPDATE','reservation',NOW());
 END$
 
 CREATE TRIGGER reservation_delete_log
 BEFORE DELETE ON reservation
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'DELETE from reservation',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'DELETE','reservation',NOW());
 END$
 
 CREATE TRIGGER event_insert_log
 BEFORE INSERT ON event
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'INSERT into event',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'INSERT','event',NOW());
 END$
 
 CREATE TRIGGER event_update_log
 BEFORE UPDATE ON event
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'UPDATE event',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'UPDATE','event',NOW());
 END$
 
 CREATE TRIGGER event_delete_log
 BEFORE DELETE ON event
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'DELETE from event',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'DELETE','event',NOW());
 END$
 
 CREATE TRIGGER travel_to_insert_log
 BEFORE INSERT ON travel_to
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'INSERT into travel_to',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'INSERT','travel_to',NOW());
 END$
 
 CREATE TRIGGER travel_to_update_log
 BEFORE UPDATE ON travel_to
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'UPDATE travel_to',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'UPDATE','travel_to',NOW());
 END$
 
 CREATE TRIGGER travel_to_delete_log
 BEFORE DELETE ON travel_to
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'DELETE from travel_to',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'DELETE','travel_to',NOW());
 END$
 
 CREATE TRIGGER destination_insert_log
 BEFORE INSERT ON destination
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'INSERT into destination',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'INSERT','destination',NOW());
 END$
 
 CREATE TRIGGER destination_update_log
 BEFORE UPDATE ON destination
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'UPDATE destination',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'UPDATE','destination',NOW());
 END$
 
 CREATE TRIGGER destination_delete_log
 BEFORE DELETE ON destination
 FOR EACH ROW
 BEGIN 
-	INSERT INTO it_logs(IT_id,action,log_date) VALUES
-	(USER(),'DELETE from destination',NOW());
+	INSERT INTO it_logs(IT_id,action,table_name,log_date) VALUES
+	(USER(),'DELETE','destination',NOW());
 END$
 
 DELIMITER ;

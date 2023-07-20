@@ -160,5 +160,6 @@ CREATE TABLE IT_logs(
 log_id INT AUTO_INCREMENT,
 IT_id CHAR(10) NOT NULL, 
 action VARCHAR(255),
+table_name VARCHAR(255),
 log_date DATETIME,
 PRIMARY KEY (log_id));

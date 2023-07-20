@@ -112,7 +112,8 @@ public class MainAppWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: Perform DELETE FROM TABLE action
-                JOptionPane.showMessageDialog(null, "Get IT logs info button clicked!");
+                List<String> logs = getITLogsFromDatabase();
+                openResultScreen(logs);
             }
         });
 
@@ -120,6 +121,7 @@ public class MainAppWindow extends JFrame {
         setContentPane(mainPanel);
     }
 
+    // Method that returns workers data from each branch
     private List<String> fetchResultsFromDatabase()
     {
         List<String> results = new ArrayList<>();
@@ -141,19 +143,16 @@ public class MainAppWindow extends JFrame {
 
             try
             {
-                StringBuilder header = new StringBuilder();
-                header.append("Branch Code\tWorker Name\tWorker Last Name\tWorker Salary\tBranch Salaries Sum");
-                results.add(header.toString());
+                results.add("Branch Code\tWorker Name\tWorker Last Name\tWorker Salary\tBranch Salaries Sum");
                 while (resultSet.next())
                 {
-                    StringBuilder currRow = new StringBuilder();
-                    currRow.append(resultSet.getString("w.wrk_br_code")).append(",\t");
-                    currRow.append(resultSet.getString("w.wrk_name")).append(",\t");
-                    currRow.append(resultSet.getString("w.wrk_lname")).append(",\t\t");
-                    currRow.append(resultSet.getString("w.wrk_salary")).append(",\t");
-                    currRow.append(resultSet.getString("total_salary_per_branch"));
+                    String currRow = resultSet.getString("w.wrk_br_code") + ",\t" +
+                            resultSet.getString("w.wrk_name") + ",\t" +
+                            resultSet.getString("w.wrk_lname") + ",\t\t" +
+                            resultSet.getString("w.wrk_salary") + ",\t" +
+                            resultSet.getString("total_salary_per_branch");
 
-                    results.add(currRow.toString());
+                    results.add(currRow);
                 }
             }
             catch (Exception e)
@@ -167,6 +166,50 @@ public class MainAppWindow extends JFrame {
         }
 
         return results;
+    }
+
+    // Method that returns data from it_log table
+    private List<String> getITLogsFromDatabase()
+    {
+        List<String> logs = new ArrayList<>();
+
+        // Database connection and query
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        try
+        {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT i.table_name,i.action,w.wrk_lname,i.log_date FROM it_logs AS i INNER JOIN worker AS w ON w.wrk_AT=i.IT_id;";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            try
+            {
+                logs.add("Worker Last Name\tAction\tTable\tTimestamp");
+                while(resultSet.next())
+                {
+                    String currLog = resultSet.getString("w.wrk_lname")+",\t\t"+
+                            resultSet.getString("i.action")+"\t"+
+                            resultSet.getString("i.table_name")+"\t"+
+                            resultSet.getString("i.log_date");
+
+                    logs.add(currLog);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return logs;
     }
 
     // Method that opens then ResultScreen with the fetched data
