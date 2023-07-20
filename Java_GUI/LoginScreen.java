@@ -12,6 +12,7 @@ public class LoginScreen extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton loginButton;
+    private JRadioButton showPasswordRadioButton;
 
     public LoginScreen() {
         setTitle("Login");
@@ -51,6 +52,21 @@ public class LoginScreen extends JFrame {
                 }
             }
         });
+
+        // Radio button for password
+        showPasswordRadioButton = new JRadioButton("Show Password");
+        showPasswordRadioButton.setBounds(140, 130, 150, 25);
+        showPasswordRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showPasswordRadioButton.isSelected()) {
+                    passwordField.setEchoChar((char) 0);
+                } else {
+                    passwordField.setEchoChar('*');
+                }
+            }
+        });
+        panel.add(showPasswordRadioButton);
     }
 
     private boolean login(String username, String password) {
@@ -84,5 +100,13 @@ public class LoginScreen extends JFrame {
             ex.printStackTrace();
             return false;
         }
+    }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new LoginScreen().setVisible(true);
+            }
+        });
     }
 }
