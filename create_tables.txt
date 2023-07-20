@@ -155,11 +155,10 @@ ON DELETE CASCADE ON UPDATE CASCADE);
 CREATE INDEX money ON reservation_offers(advance_fee);
 CREATE INDEX idx_cust_lname ON reservation_offers(cust_lname);
 
+/* Το IT_id είναι απλά ένα attribute του πίνακα ώστε να μπορούμε να διαγράψουμε έναν worker χωρίς να διαγράφεται και όποια καταγραφή του πίνακα it_logs με αυτό το wrk_id (πετάει errors αν δεν το κάνουμε έτσι */
 CREATE TABLE IT_logs(
 log_id INT AUTO_INCREMENT,
 IT_id CHAR(10) NOT NULL, 
 action VARCHAR(255),
 log_date DATETIME,
-PRIMARY KEY (log_id),
-FOREIGN KEY (IT_id) REFERENCES IT (IT_AT)
-ON DELETE NO ACTION ON UPDATE NO ACTION);
+PRIMARY KEY (log_id));

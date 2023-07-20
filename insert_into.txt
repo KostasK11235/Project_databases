@@ -77,6 +77,28 @@ INSERT INTO worker VALUES
 ('AT048', 'Lily', 'Green', 5500.00, 1118),
 ('AT049', 'Daniel', 'Turner', 6300.50, 1119),
 ('AT050', 'Victoria', 'White', 5700.75, 1120);
+('AT051','Mia','Clark',6500.00,1111),
+('AT052','James','Wilson',6000.00,1112),
+('AT053','Sophia','Anderson',5500.00,1113),
+('AT054','David','Walker',5400.25,1114),
+('AT055','Joseph','Adams',4500.25,1115),
+('AT056','Christopher','Thomas',5800.25,1116),
+('AT057','Victoria','Lee',6200.75,1117),
+('AT058','Alexander','Turner',5700.75,1118),
+('AT059','Olivia','Davis',6300.50,1119),
+('AT060','Lily','Hall',5900.50,1120);
+
+INSERT INTO IT VALUES
+('AT051','clark','2023-01-25',NULL),
+('AT052','wilson','2022-12-15',NULL),
+('AT053','anderson','2023-02-17',NULL),
+('AT054','walker','2023-05-07',NULL),
+('AT055','adams','2023-03-10',NULL),
+('AT056','thomas','2023-06-22',NULL),
+('AT057','lee','2022-11-30',NULL),
+('AT058','turner','2022-12-03',NULL),
+('AT059','davis','2023-02-25',NULL),
+('AT060','hall','2023-04-19',NULL);
 
 INSERT INTO admin (adm_AT, adm_type, adm_diploma) VALUES
 ('AT011', 'ADMINISTRATIVE', 'Bachelor of Business Administration'),
