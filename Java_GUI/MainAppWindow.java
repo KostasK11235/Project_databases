@@ -79,7 +79,12 @@ public class MainAppWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: Perform DELETE FROM TABLE action
-                JOptionPane.showMessageDialog(null, "Get customers info button clicked!");
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new InsertCustNameWindow().setVisible(true);
+                    }
+                });
             }
         });
 
@@ -87,7 +92,8 @@ public class MainAppWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: Perform DELETE FROM TABLE action
-                JOptionPane.showMessageDialog(null, "Get branch info button clicked!");
+                List<String> branchInfo = getBranchInfo();
+                openResultScreen(branchInfo);
             }
         });
 
@@ -212,7 +218,64 @@ public class MainAppWindow extends JFrame {
         return logs;
     }
 
-    // Method that opens then ResultScreen with the fetched data
+    // Method that returns information for every branch, its manager, total reservations and income
+    private List<String> getBranchInfo()
+    {
+        List<String> info = new ArrayList<>();
+
+        // Database connection and query
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        try
+        {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT b.br_code,b.br_street,b.br_num,b.br_city,w.wrk_name AS admin_name," +
+                    "w.wrk_lname AS admin_lastname,COUNT(r.res_tr_id) AS total_reservations," +
+                    "COUNT(r.res_tr_id)*t.tr_cost AS total_income " +
+                    "FROM branch AS b " +
+                    "LEFT JOIN worker AS w ON b.br_code = w.wrk_br_code " +
+                    "LEFT JOIN admin AS ad ON w.wrk_AT = ad.adm_AT " +
+                    "LEFT JOIN trip AS t ON b.br_code = t.tr_br_code " +
+                    "LEFT JOIN reservation AS r ON t.tr_id = r.res_tr_id " +
+                    "WHERE ad.adm_type = 'ADMINISTRATIVE' " +
+                    "GROUP BY b.br_code,b.br_street,b.br_num,b.br_city,w.wrk_name,w.wrk_lname;";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+
+            try
+            {
+                info.add("Column names");
+                while(resultSet.next())
+                {
+                    String currInfo = resultSet.getString("b.br_code")+",\t"+
+                            String.format("%-"+ 30 + "s", resultSet.getString("b.br_street"))+"\t"+
+                            resultSet.getString("b.br_num")+"\t"+
+                            resultSet.getString("b.br_city")+"\t"+
+                            resultSet.getString("admin_name")+"\t"+
+                            resultSet.getString("admin_lastname")+"\t"+
+                            resultSet.getString("total_reservations")+"\t"+
+                            resultSet.getString("total_income");
+
+                    info.add(currInfo);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return info;
+    }
+
+        // Method that opens then ResultScreen with the fetched data
     private void openResultScreen(List<String> results)
     {
         SwingUtilities.invokeLater(new Runnable() {

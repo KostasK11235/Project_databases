@@ -47,6 +47,8 @@ public class LoginScreen extends JFrame {
                 if (login(username, password)) {
                     // TODO: Open the main application window or perform other actions
                     JOptionPane.showMessageDialog(null, "Login successful!");
+                    setVisible(false);
+                    new MainAppWindow().setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid username or password");
                 }
