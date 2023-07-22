@@ -71,7 +71,12 @@ public class MainAppWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: Perform DELETE FROM TABLE action
-                JOptionPane.showMessageDialog(null, "Get branch trip info button clicked!");
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new ChooseDatesWindow().setVisible(true);
+                    }
+                });
             }
         });
 
