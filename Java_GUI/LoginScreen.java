@@ -44,11 +44,14 @@ public class LoginScreen extends JFrame {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                if (login(username, password)) {
+                String loggedAdmin = login(username, password);
+
+                if (loggedAdmin!=null) {
                     // TODO: Open the main application window or perform other actions
+                    System.out.println("Admin: "+loggedAdmin);
                     JOptionPane.showMessageDialog(null, "Login successful!");
                     setVisible(false);
-                    new MainAppWindow().setVisible(true);
+                    new MainAppWindow(loggedAdmin).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid username or password");
                 }
@@ -71,11 +74,12 @@ public class LoginScreen extends JFrame {
         panel.add(showPasswordRadioButton);
     }
 
-    private boolean login(String username, String password) {
+    private String login(String username, String password) {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
         String dbPassword = "";
 
+        String loggedUser = null;
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
             String sql = "SELECT * FROM IT WHERE IT_AT = ? AND password = ?";
@@ -87,6 +91,7 @@ public class LoginScreen extends JFrame {
             try {
                 while (resultSet.next()) {
                     String id = resultSet.getString("IT_AT");
+                    loggedUser = id;
                     String passwd = resultSet.getString("password");
                     Date startDate = resultSet.getDate("start_date");
                     Date endDate = resultSet.getDate("end_date");
@@ -96,13 +101,15 @@ public class LoginScreen extends JFrame {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            return resultSet.first(); // If a matching IT record is found, login is successful
+            System.out.println("login:" + loggedUser);
+            return loggedUser; // If a matching IT record is found, login is successful
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-            return false;
+            return loggedUser;
         }
     }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

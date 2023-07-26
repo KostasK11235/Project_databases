@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainAppWindow extends JFrame {
-    public MainAppWindow() {
+    public MainAppWindow(String loggedUser) {
         setTitle("Main Application Window");
         setSize(400, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -42,7 +42,7 @@ public class MainAppWindow extends JFrame {
         mainPanel.add(newITButton);
         mainPanel.add(itLogsButton);
 
-        // Register action listeners for the buttons
+        // Insert data in tables Button Action Listener
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -51,6 +51,7 @@ public class MainAppWindow extends JFrame {
             }
         });
 
+        // Update data in tables Button Action Listener
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,6 +60,7 @@ public class MainAppWindow extends JFrame {
             }
         });
 
+        // Delete data from tables Button Action Listener
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -67,6 +69,7 @@ public class MainAppWindow extends JFrame {
             }
         });
 
+        // Get trip data within certain dates Button Action Listener
         branchTripInfoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -80,6 +83,7 @@ public class MainAppWindow extends JFrame {
             }
         });
 
+        // Get customer(s) data from reservation_offers Button Action Listener
         getCustomersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -93,6 +97,7 @@ public class MainAppWindow extends JFrame {
             }
         });
 
+        // Get information about each branch Button Action Listener
         branchInfoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -102,6 +107,7 @@ public class MainAppWindow extends JFrame {
             }
         });
 
+        // Get information about every worker on each branch Button Action Listener
         branchWorkersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -111,14 +117,21 @@ public class MainAppWindow extends JFrame {
             }
         });
 
+        // Insert new IT Button Action Listener
         newITButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: Perform DELETE FROM TABLE action
-                JOptionPane.showMessageDialog(null, "Insert new IT person button clicked!");
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new InsertNewITWindow(loggedUser).setVisible(true);
+                    }
+                });
             }
         });
 
+        // Get data from it_logs Button Action Listener
         itLogsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -280,13 +293,23 @@ public class MainAppWindow extends JFrame {
         return info;
     }
 
-        // Method that opens then ResultScreen with the fetched data
+    // Method that opens then ResultScreen with the fetched data
     private void openResultScreen(List<String> results)
     {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 new ResultScreen(results).setVisible(true);
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                LoginScreen obj = new LoginScreen();
+                obj.setVisible(true);
             }
         });
     }

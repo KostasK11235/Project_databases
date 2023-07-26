@@ -54,8 +54,6 @@ public class ChooseDatesWindow extends JFrame {
                 }
             }
         });
-
-        // Add the panel to the frame
     }
 
     private void createDatePickerComponents() {
@@ -193,14 +191,5 @@ public class ChooseDatesWindow extends JFrame {
         }
 
         return trips;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new ChooseDatesWindow().setVisible(true);
-            }
-        });
     }
 }
