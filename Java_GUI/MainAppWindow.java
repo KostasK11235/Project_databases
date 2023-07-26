@@ -47,7 +47,12 @@ public class MainAppWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: Perform INSERT INTO TABLE action
-                JOptionPane.showMessageDialog(null, "INSERT INTO TABLE button clicked!");
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new SelectTableWindow().setVisible(true);
+                    }
+                });
             }
         });
 
