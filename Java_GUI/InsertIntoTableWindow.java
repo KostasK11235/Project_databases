@@ -2,10 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 public class InsertIntoTableWindow extends JFrame {
     private JComboBox<String> dropdownList;
@@ -41,16 +37,6 @@ public class InsertIntoTableWindow extends JFrame {
 
             }
         });
-    }
-    private String getDateAsString(JComboBox<Integer> yearComboBox, JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox) {
-        int year = (int) yearComboBox.getSelectedItem();
-        int month = monthComboBox.getSelectedIndex() + 1; // Add 1 to adjust for zero-based index
-        int day = (int) dayComboBox.getSelectedItem();
-
-        // Format the date as a string in the desired format
-        String dateAsString = String.format("%04d-%02d-%02d", year, month, day);
-
-        return dateAsString;
     }
 
     public static void main(String[] args) {
