@@ -80,6 +80,7 @@ to_dst_id INT(11) NOT NULL,
 to_arrival DATETIME NOT NULL,
 to_departure DATETIME NOT NULL,
 PRIMARY KEY(to_tr_id,to_dst_id),
+FOREIGN KEY (to_tr_id) REFERENCES trip (tr_id),
 FOREIGN KEY (to_dst_id) REFERENCES destination (dst_id)
 ON DELETE CASCADE ON UPDATE CASCADE);
 
