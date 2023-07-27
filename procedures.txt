@@ -124,3 +124,12 @@ BEGIN
 END $
 
 DELIMITER ;
+
+/* Αλλαγή AT_IT στον πίνακα it_logs */
+DELIMITER $
+CREATE PROCEDURE alt_it_at(IN userId CHAR)
+BEGIN
+	UPDATE it_logs SET IT_id=userId WHERE log_id=(SELECT MAX(log_id) FROM it_logs);
+END$
+
+DELIMITER ;

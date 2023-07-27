@@ -32,7 +32,7 @@ public class InsertIntoTableWindow extends JFrame
     private JComboBox<Integer> dayComboBox2;
     private JButton insertButton;
 
-    public InsertIntoTableWindow(String tableName) {
+    public InsertIntoTableWindow(String tableName, String loggedAdmin) {
         setTitle("Insert data for table" + tableName);
         setSize(500, 450);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -61,8 +61,8 @@ public class InsertIntoTableWindow extends JFrame
                 JLabel admDiploma = new JLabel("adm_diploma:");
                 panel.add(admDiploma);
 
-                field3 = new JTextField(15);
-                panel.add(field3);
+                field2 = new JTextField(15);
+                panel.add(field2);
 
                 break;
             case "branch":
@@ -121,14 +121,14 @@ public class InsertIntoTableWindow extends JFrame
                 JLabel dstLanguage = new JLabel("dst_language:");
                 panel.add(dstLanguage);
 
-                field5 = new JTextField(15);
-                panel.add(field5);
+                field4 = new JTextField(15);
+                panel.add(field4);
                 
                 JLabel dstLocation = new JLabel("dst_location:");
                 panel.add(dstLocation);
                 
-                field6 = new JTextField(15);
-                panel.add(field6);
+                field5 = new JTextField(15);
+                panel.add(field5);
                 
                 break;
             case "driver":
@@ -156,6 +156,9 @@ public class InsertIntoTableWindow extends JFrame
                 JLabel drvExperience = new JLabel("drv_experience:");
                 panel.add(drvExperience);
 
+                field2 = new JTextField(15);
+                panel.add(field2);
+
                 break;
             case "event":
                 JLabel evTrId = new JLabel("ev_tr_id:");
@@ -164,28 +167,31 @@ public class InsertIntoTableWindow extends JFrame
                 field1 = new JTextField(15);
                 panel.add(field1);
 
+                // Create date fields with drop-down lists
+                createDatePickerComponents();
+
                 JLabel evStart = new JLabel("ev_start:");
                 panel.add(evStart);
 
-                field2 = new JTextField(15);
-                panel.add(field2);
+                JPanel startDate = createDatePickerPanel1();
+                panel.add(startDate);
 
                 JLabel evEnd = new JLabel("ev_end:");
                 panel.add(evEnd);
 
-                field3 = new JTextField(15);
-                panel.add(field3);
+                JPanel endDate = createDatePickerPanel2();
+                panel.add(endDate);
 
                 JLabel evDescr = new JLabel("ev_descr:");
                 panel.add(evDescr);
 
-                field4 = new JTextField(15);
-                panel.add(field4);
+                field2 = new JTextField(15);
+                panel.add(field2);
 
                 break;
             case "guide":
-                JLabel guyAT = new JLabel("guy_AT:");
-                panel.add(guyAT);
+                JLabel guiAT = new JLabel("gui_AT:");
+                panel.add(guiAT);
 
                 field1 = new JTextField(15);
                 panel.add(field1);
@@ -210,8 +216,8 @@ public class InsertIntoTableWindow extends JFrame
                 field2 = new JTextField(15);
                 panel.add(field2);
 
-                JLabel startDate = new JLabel("start_date:");
-                panel.add(startDate);
+                JLabel startITDate = new JLabel("start_date:");
+                panel.add(startITDate);
 
                 // Create date fields with drop-down lists
                 createDatePickerComponents();
@@ -516,7 +522,113 @@ public class InsertIntoTableWindow extends JFrame
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "insert button pressed!");
+
+                switch (tableName.toLowerCase())
+                {
+                    case "admin":
+                        String admAT = field1.getText();
+                        String admType = (String) dropdownList1.getSelectedItem();
+                        String admDiploma = field2.getText();
+                        break;
+                    case "branch":
+                        String brCode = field1.getText();
+                        String brStreet = field2.getText();
+                        String brNum = field3.getText();
+                        String brCity = field4.getText();
+                        break;
+                    case "destination":
+                        String dstTypes = field1.getText();
+                        String dstName = field2.getText();
+                        String dstDescr = field3.getText();
+                        String dstType = (String) dropdownList1.getSelectedItem();
+                        String dstLanguage = field4.getText();
+                        String dstLocation = field5.getText();
+                        break;
+                    case "driver":
+                        String drvAT = field1.getText();
+                        String drvLicense = (String) dropdownList1.getSelectedItem();
+                        String drvRoute = (String) dropdownList2.getSelectedItem();
+                        String drvExperience = field2.getText();
+                        break;
+                    case "event":
+                        String evTrId = field1.getText();
+                        String evStart = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1);
+                        String evEnd = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2);
+                        String evDescr = field2.getText();
+                        break;
+                    case "guide":
+                        String guiAT = field1.getText();
+                        String guiCV = field2.getText();
+                        break;
+                    case "it":
+                        String itAT = field1.getText();
+                        String password = field2.getText();
+                        String itStartDate = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1);
+                        break;
+                    case "it_logs":
+                        String logId = field1.getText();
+                        String itID = field2.getText();
+                        String action = (String) dropdownList1.getSelectedItem();
+                        String table = (String) dropdownList2.getSelectedItem();
+                        String logDate = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1);
+                        break;
+                    case "languages":
+                        String lngGuiAt = field1.getText();
+                        String lngs = field2.getText();
+                        break;
+                    case "manages":
+                        String mngAdmAt = field1.getText();
+                        String mngBrCode = field2.getText();
+                        break;
+                    case "offers":
+                        String offerCode = field1.getText();
+                        String offerDate1 = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1);
+                        String offerDate2 = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2);
+                        String cost = field2.getText();
+                        String destination = field3.getText();
+                        break;
+                    case "phones":
+                        String phBrCode = field1.getText();
+                        String phNumber = field2.getText();
+                        break;
+                    case "reservation":
+                        String resTrId = field1.getText();
+                        String resSeatnum = field2.getText();
+                        String resName = field3.getText();
+                        String resLName = field4.getText();
+                        String isAdult = (String) dropdownList1.getSelectedItem();
+                        break;
+                    case "reservation_offers":
+                        String resOfferCode = field1.getText();
+                        String custName = field2.getText();
+                        String custLName = field3.getText();
+                        String trOfferCode = field4.getText();
+                        String advanceFee = field5.getText();
+                        break;
+                    case "travel_to":
+                        String toTrId = field1.getText();
+                        String toDstId = field2.getText();
+                        String arrival = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1);
+                        String departure = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2);
+                        break;
+                    case "trip":
+                        String trId = field1.getText();
+                        String trDeparture = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1);
+                        String trReturn = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2);
+                        String trMaxSeats = field2.getText();
+                        String trCost = field3.getText();
+                        String trBrCode = field4.getText();
+                        String trGuiAT = field5.getText();
+                        String trDrvAT = field6.getText();
+                        break;
+                    case "worker":
+                        String wrkAT = field1.getText();
+                        String wrkName = field2.getText();
+                        String wrkLName = field3.getText();
+                        String wrkSalary = field4.getText();
+                        String wrkBrCode = field5.getText();
+                        break;
+                }
             }
         });
 
@@ -574,62 +686,5 @@ public class InsertIntoTableWindow extends JFrame
         String dateAsString = String.format("%04d-%02d-%02d", year, month, day);
 
         return dateAsString;
-    }
-
-    private List<String> searchLastName(String lastName)
-    {
-        List<String> participation = new ArrayList<>();
-
-        // Database connection and query
-        String url = "jdbc:mariadb://localhost:3306/project";
-        String dbUsername = "root";
-        String dbPassword = "";
-
-        try
-        {
-            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "{CALL get_Offers_Participation(?)}";
-            CallableStatement callStmt = connection.prepareCall(sql);
-            callStmt.setString(1, lastName);
-
-            boolean hasResultSet = callStmt.execute();
-
-            if(hasResultSet)
-            {
-                ResultSet resultSet = callStmt.getResultSet();
-
-                resultSet.last();
-                int resultSetSize = resultSet.getRow();
-
-                // Check if it's a single result of multiple rows
-                if(resultSetSize==1)
-                {
-                    participation.add("Customer Name\tCustomer Last Name\tTrip Offer Code");
-                    String participant = resultSet.getString("cust_name") + "\t\t" +
-                            resultSet.getString("cust_lname") + "\t\t" +
-                            resultSet.getInt("trip_offer_code");
-
-                    participation.add(participant);
-                }
-                else if(resultSetSize>1)
-                {
-                    participation.add("Trip Offer Code\tTotal People");
-                    resultSet.beforeFirst();	// Move the cursor back to the beginning
-                    while(resultSet.next())
-                    {
-                        String participant = resultSet.getInt("trip_offer_code") + "\t"
-                                + resultSet.getInt("total_people");
-
-                        participation.add(participant);
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return participation;
     }
 }
