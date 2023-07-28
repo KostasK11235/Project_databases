@@ -7,8 +7,8 @@ public class SelectTableWindow extends JFrame {
     private JComboBox<String> dropdownList;
     private JButton confirmButton;
 
-    public SelectTableWindow() {
-        setTitle("Choose two dates");
+    public SelectTableWindow(String userID) {
+        setTitle("Choose a table to insert data:");
         setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -17,7 +17,7 @@ public class SelectTableWindow extends JFrame {
         setContentPane(panel);
 
         // Create the list of string
-        String[] tables = {"Admin", "Branch", "Destination", "Driver", "Event", "Guide", "IT", "IT_logs", "Languages"
+        String[] tables = {"Admin", "Branch", "Destination", "Driver", "Event", "Guide", "Languages"
                 , "Manages", "Offers", "Phones", "Reservation", "Reservation_Offers", "Travel_to", "Trip", "Worker"};
 
         // Create the dropdown list
@@ -31,22 +31,133 @@ public class SelectTableWindow extends JFrame {
         confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // TODO: Perform INSERT INTO TABLE action
                 String selectedTable = (String) dropdownList.getSelectedItem();
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        new InsertIntoTableWindow(selectedTable).setVisible(true);
-                    }
-                });
-            }
-        });
-    }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new SelectTableWindow().setVisible(true);
+                switch (selectedTable.toLowerCase())
+                {
+                    case "admin":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertAdmin().setVisible(true);
+                            }
+                        });
+                        break;
+                    case "branch":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertBranch().setVisible(true);
+                            }
+                        });
+                        break;
+                    case "destination":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertDestination(userID).setVisible(true);
+                            }
+                        });
+                        break;
+                    case "driver":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertDriver().setVisible(true);
+                            }
+                        });
+                        break;
+                    case "event":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertEvent(userID).setVisible(true);
+                            }
+                        });
+                        break;
+                    case "guide":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertGuide().setVisible(true);
+                            }
+                        });
+                        break;
+                    case "languages":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertLanguages().setVisible(true);
+                            }
+                        });
+                        break;
+                    case "manages":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertManages().setVisible(true);
+                            }
+                        });
+                        break;
+                    case "offers":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertOffers().setVisible(true);
+                            }
+                        });
+                        break;
+                    case "phones":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertPhones().setVisible(true);
+                            }
+                        });
+                        break;
+                    case "reservation":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertReservation(userID).setVisible(true);
+                            }
+                        });
+                        break;
+                    case "reservation_offers":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertReservationOffers().setVisible(true);
+                            }
+                        });
+                        break;
+                    case "travel_to":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertTravelTo(userID).setVisible(true);
+                            }
+                        });
+                        break;
+                    case "trip":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertTrip(userID).setVisible(true);
+                            }
+                        });
+                        break;
+                    case "worker":
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                new InsertWorker().setVisible(true);
+                            }
+                        });
+                        break;
+                }
+
             }
         });
     }
