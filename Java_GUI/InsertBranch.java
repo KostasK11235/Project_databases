@@ -8,12 +8,11 @@ public class InsertBranch extends JFrame {
     private JTextField field2;
     private JTextField field3;
     private JTextField field4;
-    private JComboBox<String> dropdownList1;
     private JButton insertButton;
 
-    public InsertBranch(String tableName) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertBranch() {
+        setTitle("Insert data for table: branch");
+        setSize(350, 220);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -72,26 +71,8 @@ public class InsertBranch extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT * FROM branch WHERE br_code=? AND br_street=? AND br_number=? AND br_city=?";
+            String sql = "INSERT INTO branch VALUES (?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, code);
-            statement.setString(2, street);
-            statement.setString(3, number);
-            statement.setString(4, city);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            try {
-                if (resultSet.first()) {
-                    insertStatus = "Branch with the same information already exists!";
-                    return insertStatus;
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-
-            sql = "INSERT INTO branch VALUES (?,?,?,?)";
-            statement = connection.prepareStatement(sql);
             statement.setString(1, code);
             statement.setString(2, street);
             statement.setString(3, number);
@@ -102,11 +83,14 @@ public class InsertBranch extends JFrame {
             if (rowsAffected > 0)
                 insertStatus = "New branch inserted into branch table!";
 
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "Branch with the same br_code already exists!";
         }
         return insertStatus;
     }
-
 }
 

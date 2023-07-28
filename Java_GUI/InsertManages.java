@@ -8,9 +8,9 @@ public class InsertManages extends JFrame{
     private JTextField field2;
     private JButton insertButton;
 
-    public InsertManages(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertManages() {
+        setTitle("Insert data for table: manages");
+        setSize(350, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -45,7 +45,7 @@ public class InsertManages extends JFrame{
         });
     }
 
-    private String insertManagesFunction(String at, String type)
+    private String insertManagesFunction(String at, String branchCode)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -66,7 +66,7 @@ public class InsertManages extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "Worker must be in admin personnel with 'ADMINISTRATIVE' type!";
+                    insertStatus = "Worker must be in admin personnel with 'ADMINISTRATIVE' adm_type!";
                     return insertStatus;
                 }
             }
@@ -78,15 +78,19 @@ public class InsertManages extends JFrame{
             sql = "INSERT INTO manages VALUES (?,?)";
             statement = connection.prepareStatement(sql);
             statement.setString(1, at);
-            statement.setString(2, type);
+            statement.setString(2, branchCode);
 
             int rowsAffected = statement.executeUpdate();
 
             if(rowsAffected>0)
                 insertStatus = "New data inserted into manages table!";
 
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
+            insertStatus = "Manager with the same mng_adm_AT and mng_br_code already exists!";
         }
         return insertStatus;
     }

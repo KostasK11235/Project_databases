@@ -10,9 +10,9 @@ public class InsertDriver extends JFrame{
     private JComboBox<String> dropdownList2;
     private JButton insertButton;
 
-    public InsertDriver(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertDriver() {
+        setTitle("Insert data for table: driver");
+        setSize(350, 220);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -74,7 +74,8 @@ public class InsertDriver extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT wrk_AT FROM worker WHERE wrk_AT=?";
+            String sql = "SELECT w.wrk_AT FROM worker AS w WHERE w.wrk_AT=? AND w.wrk_AT NOT IN\n" +
+                    "(SELECT adm_AT FROM admin UNION SELECT drv_AT FROM driver UNION SELECT gui_AT FROM guide);";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, at);
 
@@ -84,7 +85,8 @@ public class InsertDriver extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "In order to add new driver, his data must exist on worker table!";
+                    insertStatus = "In order to add new driver, his data must exist on worker table" +
+                            "and not in admin, driver or guide tables!";
                     return insertStatus;
                 }
             }
@@ -105,8 +107,12 @@ public class InsertDriver extends JFrame{
             if(rowsAffected>0)
                 insertStatus = "New driver inserted into driver table!";
 
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "Driver with the same drv_AT already exists!";
         }
         return insertStatus;
     }

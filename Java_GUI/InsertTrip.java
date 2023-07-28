@@ -11,7 +11,6 @@ public class InsertTrip extends JFrame{
     private JTextField field4;
     private JTextField field5;
     private JTextField field6;
-    private JComboBox<String> dropdownList1;
     private JComboBox<Integer> yearComboBox1;
     private JComboBox<String> monthComboBox1;
     private JComboBox<Integer> dayComboBox1;
@@ -20,9 +19,9 @@ public class InsertTrip extends JFrame{
     private JComboBox<Integer> dayComboBox2;
     private JButton insertButton;
 
-    public InsertTrip(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertTrip(String loggedAdmin) {
+        setTitle("Insert data for table: trip");
+        setSize(350, 385);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -116,17 +115,40 @@ public class InsertTrip extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT * FROM trip WHERE tr_id=?";
+            String sql = "SELECT w.wrk_AT,w.wrk_br_code FROM worker AS w INNER JOIN driver AS d ON\n" +
+                    "w.wrk_AT=d.drv_AT WHERE d.drv_AT=? AND w.wrk_br_code=?";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, id);
+            statement.setString(1, DrvAT);
+            statement.setString(2, trBrCode);
 
             ResultSet resultSet = statement.executeQuery();
 
             try
             {
-                if(resultSet.first())
+                if(!resultSet.first())
                 {
-                    insertStatus = "Trip with the same id already exists!";
+                    insertStatus = "Driver with the given drv_AT does not exist or work on given tr_br_code";
+                    return insertStatus;
+                }
+            }
+            catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+
+            sql = "SELECT w.wrk_AT,w.wrk_br_code FROM worker AS w INNER JOIN guide AS g ON\n" +
+                    "w.wrk_AT=g.gui_AT WHERE g.gui_AT=? AND w.wrk_br_code=?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, GuiAT);
+            statement.setString(2, trBrCode);
+
+            resultSet = statement.executeQuery();
+
+            try
+            {
+                if(!resultSet.first())
+                {
+                    insertStatus = "Guide with the given gui_AT does not exist or work on given tr_br_code";
                     return insertStatus;
                 }
             }
@@ -159,7 +181,8 @@ public class InsertTrip extends JFrame{
                 statement.executeUpdate();
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "Trip with the same tr_id,tr_departure and tr_return already exists!";
         }
         return insertStatus;
     }

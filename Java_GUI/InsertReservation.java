@@ -11,9 +11,9 @@ public class InsertReservation extends JFrame{
     private JComboBox<String> dropdownList1;
     private JButton insertButton;
 
-    public InsertReservation(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertReservation(String loggedAdmin) {
+        setTitle("Insert data for table: reservation");
+        setSize(360, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -93,7 +93,7 @@ public class InsertReservation extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "Trip with the inserted res_tr_id does not exist!";
+                    insertStatus = "Field res_tr_id must match an existing tr_id!";
                     return insertStatus;
                 }
             }
@@ -102,28 +102,7 @@ public class InsertReservation extends JFrame{
                 ex.printStackTrace();
             }
 
-            sql = "SELECT * FROM reservation WHERE res_tr_id=? AND res_seatnum=?";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, trID);
-            statement.setString(2, seatnum);
-
-            resultSet = statement.executeQuery();
-
-            try
-            {
-                if(!resultSet.first())
-                {
-                    insertStatus = "";
-                }
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
-                insertStatus = "Reservation with the same res_tr_id and res_seatnum already exists!";
-                return insertStatus;
-            }
-
-            sql = "INSERT INTO reservation VALUES (?,?,?,?,?,?)";
+            sql = "INSERT INTO reservation VALUES (?,?,?,?,?)";
             statement = connection.prepareStatement(sql);
             statement.setString(1, trID);
             statement.setString(2, seatnum);
@@ -143,8 +122,12 @@ public class InsertReservation extends JFrame{
 
                 statement.executeUpdate();
             }
+
+            statement.close();
+            connection.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "Reservation with the same res_tr_id and res_seatnum already exists!";
         }
         return insertStatus;
     }

@@ -65,8 +65,7 @@ tr_cost FLOAT(7,2) NOT NULL,
 tr_br_code INT(11) NOT NULL,
 tr_gui_AT CHAR(10) NOT NULL,
 tr_drv_AT CHAR(10) NOT NULL,
-PRIMARY KEY(tr_id),
-UNIQUE (tr_return, tr_departure),
+PRIMARY KEY(tr_id,tr_return, tr_departure),
 FOREIGN KEY(tr_br_code) REFERENCES branch (br_code)
 ON DELETE CASCADE ON UPDATE CASCADE,
 FOREIGN KEY(tr_gui_AT) REFERENCES guide (gui_AT)
@@ -90,7 +89,7 @@ dst_name VARCHAR(50) NOT NULL,
 dst_descr TEXT,
 dst_rtype ENUM('LOCAL','ABROAD') NOT NULL,
 dst_language VARCHAR(30) NOT NULL,
-dst_location INT(11) NOT NULL,
+dst_location INT(11),
 PRIMARY KEY(dst_id),
 FOREIGN KEY (dst_location) REFERENCES destination (dst_id)
 ON DELETE CASCADE ON UPDATE CASCADE);

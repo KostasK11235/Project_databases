@@ -10,10 +10,10 @@ public class InsertAdmin extends JFrame
     private JComboBox<String> dropdownList1;
     private JButton insertButton;
 
-    public InsertAdmin(String tableName)
+    public InsertAdmin()
     {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+        setTitle("Insert data for table: admin");
+        setSize(350, 200);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -67,7 +67,8 @@ public class InsertAdmin extends JFrame
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT wrk_AT FROM worker WHERE wrk_AT=?";
+            String sql = "SELECT w.wrk_AT FROM worker AS w WHERE w.wrk_AT=? AND w.wrk_AT NOT IN\n" +
+                    "(SELECT adm_AT FROM admin UNION SELECT drv_AT FROM driver UNION SELECT gui_AT FROM guide);";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, at);
 
@@ -77,7 +78,8 @@ public class InsertAdmin extends JFrame
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "In order to add new admin, his data must exist on worker table!";
+                    insertStatus = "In order to add new admin, his data must exist on worker table" +
+                            " and not in admin, driver or guide tables!";
                     return insertStatus;
                 }
             }
@@ -97,8 +99,12 @@ public class InsertAdmin extends JFrame
             if(rowsAffected>0)
                 insertStatus = "New admin inserted into admin table!";
 
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "There is already an admin with the same adm_AT!";
         }
         return insertStatus;
     }

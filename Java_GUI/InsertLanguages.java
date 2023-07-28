@@ -8,9 +8,9 @@ public class InsertLanguages extends JFrame {
     private JTextField field2;
     private JButton insertButton;
 
-    public InsertLanguages(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertLanguages() {
+        setTitle("Insert data for table: languages");
+        setSize(350, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -55,7 +55,7 @@ public class InsertLanguages extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT wrk_AT FROM worker WHERE wrk_AT=?";
+            String sql = "SELECT gui_AT FROM guide WHERE gui_AT=?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, at);
 
@@ -65,7 +65,7 @@ public class InsertLanguages extends JFrame {
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "Guide with the inserted AT does not exist!";
+                    insertStatus = "In order to add a new language lng_gui_AT must match an existing gui_AT!";
                     return insertStatus;
                 }
             }
@@ -84,8 +84,11 @@ public class InsertLanguages extends JFrame {
             if(rowsAffected>0)
                 insertStatus = "New data inserted into languages table!";
 
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
         }
         return insertStatus;
     }

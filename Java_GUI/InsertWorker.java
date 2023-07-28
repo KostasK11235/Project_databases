@@ -11,9 +11,9 @@ public class InsertWorker extends JFrame{
     private JTextField field5;
     private JButton insertButton;
 
-    public InsertWorker(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertWorker() {
+        setTitle("Insert data for table: worker");
+        setSize(300, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -79,27 +79,8 @@ public class InsertWorker extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT wrk_AT FROM worker WHERE wrk_AT=?";
+            String sql = "INSERT INTO worker VALUES (?,?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, wrkAT);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            try
-            {
-                if(resultSet.first())
-                {
-                    insertStatus = "Worker with the same AT already exists!";
-                    return insertStatus;
-                }
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-
-            sql = "INSERT INTO admin VALUES (?,?,?,?,?)";
-            statement = connection.prepareStatement(sql);
             statement.setString(1, wrkAT);
             statement.setString(2, name);
             statement.setString(3, lastName);
@@ -112,8 +93,17 @@ public class InsertWorker extends JFrame{
                 insertStatus = "New worker inserted into worker table!";
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "Worker with the same wrk_AT already exists!";
         }
         return insertStatus;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() { new InsertWorker().setVisible(true);
+            }
+        });
     }
 }

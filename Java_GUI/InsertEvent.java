@@ -15,9 +15,9 @@ public class InsertEvent extends JFrame{
     private JComboBox<Integer> dayComboBox2;
     private JButton insertButton;
 
-    public InsertEvent(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertEvent(String loggedAdmin) {
+        setTitle("Insert data for table: event");
+        setSize(350, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -79,20 +79,17 @@ public class InsertEvent extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT * FROM event WHERE ev_tr_id=? AND ev_start=? AND ev_end=? AND ev_descr=?";
+            String sql = "SELECT * FROM trip WHERE tr_id=?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, id);
-            statement.setString(2, start);
-            statement.setString(3, end);
-            statement.setString(4, description);
 
             ResultSet resultSet = statement.executeQuery();
 
             try
             {
-                if(resultSet.first())
+                if(!resultSet.first())
                 {
-                    insertStatus = "Event with the same data already exists!";
+                    insertStatus = "In order to add a new event, the ev_tr_id must match an existing tr_id!";
                     return insertStatus;
                 }
             }
@@ -119,10 +116,14 @@ public class InsertEvent extends JFrame{
                 statement.setString(2, "event");
 
                 statement.executeUpdate();
+
+                statement.close();
+                connection.close();
             }
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
+            insertStatus = "Event with the same ev_tr_id and ev_start already exists!";
         }
         return insertStatus;
     }

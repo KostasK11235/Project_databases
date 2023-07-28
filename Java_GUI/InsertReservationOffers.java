@@ -11,9 +11,9 @@ public class InsertReservationOffers extends JFrame{
     private JTextField field5;
     private JButton insertButton;
 
-    public InsertReservationOffers(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertReservationOffers() {
+        setTitle("Insert data for table: reservation_offers");
+        setSize(350, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -50,6 +50,9 @@ public class InsertReservationOffers extends JFrame{
 
         field5 = new JTextField(15);
         panel.add(field5);
+
+        insertButton = new JButton("Insert");
+        panel.add(insertButton);
 
         insertButton.addActionListener(new ActionListener() {
             @Override
@@ -88,7 +91,7 @@ public class InsertReservationOffers extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "Res_offer_code does not match an existing code in offers table!";
+                    insertStatus = "Trip_offer_code must match an existing offer_code in offers table!";
                     return insertStatus;
                 }
             }
@@ -110,8 +113,12 @@ public class InsertReservationOffers extends JFrame{
             if(rowsAffected>0)
                 insertStatus = "New reservation inserted into reservation_offers table!";
 
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "Reservation with the same res_offer_code already exists in reservation_offers table!";
         }
         return insertStatus;
     }

@@ -12,9 +12,9 @@ public class InsertDestination extends JFrame{
     private JComboBox<String> dropdownList1;
     private JButton insertButton;
 
-    public InsertDestination(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertDestination(String loggedAdmin) {
+        setTitle("Insert data for table: destination");
+        setSize(360, 300);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -91,39 +91,35 @@ public class InsertDestination extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT * FROM destination WHERE dst_id=? AND dst_name=? AND dst_descr=? AND dst_rtype=? AND" +
-                    "dst_language=? AND dst_location=?";
+            if (!"NULL".equalsIgnoreCase(location.toLowerCase()))
+            {
+                String sql = "SELECT * FROM destination WHERE dst_id=?";
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, location);
+
+                ResultSet resultSet = statement.executeQuery();
+
+                try
+                {
+                    if(!resultSet.first())
+                    {
+                        insertStatus = "Attribute dst_location does not match an existing dst_id!";
+                        return insertStatus;
+                    }
+                }
+                catch (SQLException ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+
+            String sql = "INSERT INTO destination(dst_id,dst_name,dst_descr,dst_rtype,dst_language) VALUES (?,?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, id);
             statement.setString(2, name);
             statement.setString(3, description);
             statement.setString(4, type);
             statement.setString(5, language);
-            statement.setString(6, location);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            try
-            {
-                if(resultSet.first())
-                {
-                    insertStatus = "Destination with the same data already exists!";
-                    return insertStatus;
-                }
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-
-            sql = "INSERT INTO destination VALUES (?,?,?,?,?,?)";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, id);
-            statement.setString(2, name);
-            statement.setString(3, description);
-            statement.setString(4, type);
-            statement.setString(5, language);
-            statement.setString(6, location);
 
             int rowsAffected = statement.executeUpdate();
 
@@ -137,8 +133,13 @@ public class InsertDestination extends JFrame{
 
                 statement.executeUpdate();
             }
+
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "Destination with the same dst_id already exists!";
         }
         return insertStatus;
     }

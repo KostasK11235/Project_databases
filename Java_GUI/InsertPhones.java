@@ -8,9 +8,9 @@ public class InsertPhones extends JFrame{
     private JTextField field2;
     private JButton insertButton;
 
-    public InsertPhones(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertPhones() {
+        setTitle("Insert data for table: offers");
+        setSize(350, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -65,7 +65,7 @@ public class InsertPhones extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "The branch code does not match to an existing branch!";
+                    insertStatus = "In order to add a new phone, ph_br_code must match an existing br_code!";
                     return insertStatus;
                 }
             }
@@ -84,8 +84,12 @@ public class InsertPhones extends JFrame{
             if(rowsAffected>0)
                 insertStatus = "New phone(s) inserted into phones table!";
 
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "Inserted phone number already exists for the selected branch!";
         }
         return insertStatus;
     }

@@ -16,9 +16,9 @@ public class InsertOffers extends JFrame{
     private JComboBox<Integer> dayComboBox2;
     private JButton insertButton;
 
-    public InsertOffers(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(300, 300);
+    public InsertOffers() {
+        setTitle("Insert data for table: offers");
+        setSize(330, 300);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -99,7 +99,7 @@ public class InsertOffers extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "In order to add new offer the destinationID must match an existing destinationID!";
+                    insertStatus = "In order to add new offer, trip_offer_code must match an existing dst_id!";
                     return insertStatus;
                 }
             }
@@ -121,8 +121,12 @@ public class InsertOffers extends JFrame{
             if(rowsAffected>0)
                 insertStatus = "New offer inserted into offers table!";
 
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
+            insertStatus = "Offer with the same offer_code already exists!";
         }
         return insertStatus;
     }

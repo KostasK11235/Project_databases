@@ -15,9 +15,9 @@ public class InsertTravelTo extends JFrame{
     private JComboBox<Integer> dayComboBox2;
     private JButton insertButton;
 
-    public InsertTravelTo(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertTravelTo(String loggedAdmin) {
+        setTitle("Insert data for table: travel_to");
+        setSize(350, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -93,7 +93,7 @@ public class InsertTravelTo extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "Trip with the same to_tr_id must already exists!";
+                    insertStatus = "Trip with the same tr_id as to_tr_id must already exists!";
                     return insertStatus;
                 }
             }
@@ -112,7 +112,7 @@ public class InsertTravelTo extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "Destination with the same to_dst_id must already exists!";
+                    insertStatus = "Destination with the same dst_id as to_dst_id must already exists!";
                     return insertStatus;
                 }
             }
@@ -141,7 +141,8 @@ public class InsertTravelTo extends JFrame{
                 statement.executeUpdate();
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "Travel to data with the same to_tr_id and to_dst_id already exists!";
         }
         return insertStatus;
     }

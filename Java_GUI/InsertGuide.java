@@ -8,9 +8,9 @@ public class InsertGuide extends JFrame {
     private JTextField field2;
     private JButton insertButton;
 
-    public InsertGuide(String tableName, String loggedAdmin) {
-        setTitle("Insert data for table" + tableName);
-        setSize(500, 450);
+    public InsertGuide() {
+        setTitle("Insert data for table: guide");
+        setSize(350, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -55,7 +55,8 @@ public class InsertGuide extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT wrk_AT FROM worker WHERE wrk_AT=?";
+            String sql = "SELECT w.wrk_AT FROM worker AS w WHERE w.wrk_AT=? AND w.wrk_AT NOT IN\n" +
+                    "(SELECT adm_AT FROM admin UNION SELECT drv_AT FROM driver UNION SELECT gui_AT FROM guide);";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, at);
 
@@ -65,7 +66,8 @@ public class InsertGuide extends JFrame {
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "In order to add new guide, his data must exist on worker table!";
+                    insertStatus = "In order to add new guide, his data must exist on worker table" +
+                            " and not in admin, driver or guide tables!";
                     return insertStatus;
                 }
             }
@@ -74,7 +76,7 @@ public class InsertGuide extends JFrame {
                 ex.printStackTrace();
             }
 
-            sql = "INSERT INTO guide VALUES (?,?,?)";
+            sql = "INSERT INTO guide VALUES (?,?)";
             statement = connection.prepareStatement(sql);
             statement.setString(1, at);
             statement.setString(2, CV);
@@ -84,10 +86,13 @@ public class InsertGuide extends JFrame {
             if(rowsAffected>0)
                 insertStatus = "New guide inserted into guide table!";
 
+            statement.close();
+            connection.close();
+
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
+            insertStatus = "There is already an guide with the same gui_AT!";
         }
         return insertStatus;
     }
-
 }
