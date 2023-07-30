@@ -93,17 +93,8 @@ public class InsertWorker extends JFrame{
                 insertStatus = "New worker inserted into worker table!";
 
         } catch (SQLException ex) {
-            // ex.printStackTrace();
-            insertStatus = "Worker with the same wrk_AT already exists!";
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new InsertWorker().setVisible(true);
-            }
-        });
     }
 }
