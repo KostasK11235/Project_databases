@@ -82,22 +82,21 @@ public class LoginScreen extends JFrame {
         String loggedUser = null;
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT * FROM IT WHERE IT_AT = ? AND password = ?";
+            String sql = "SELECT w.wrk_name, w.wrk_AT FROM worker AS w INNER JOIN it ON w.wrk_AT=it.IT_AT " +
+                    "WHERE it.password=? AND w.wrk_name=?";
+
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, username);
-            statement.setString(2, password);
+            statement.setString(1, password);
+            statement.setString(2, username);
 
             ResultSet resultSet = statement.executeQuery();
             try {
-                while (resultSet.next()) {
-                    String id = resultSet.getString("IT_AT");
-                    loggedUser = id;
-                    String passwd = resultSet.getString("password");
-                    Date startDate = resultSet.getDate("start_date");
-                    Date endDate = resultSet.getDate("end_date");
+                resultSet.first();
+                String loggedName = resultSet.getString("w.wrk_name");
+                String id = resultSet.getString("w.wrk_AT");
+                loggedUser = id;
+                System.out.println("User id: " + id + "Username: " + loggedName);
 
-                    System.out.println("IT_id: " + id + ", password: " + passwd + ", start_date: " + startDate + ", end_date" + endDate);
-                }
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
