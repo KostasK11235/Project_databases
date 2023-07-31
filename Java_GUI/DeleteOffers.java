@@ -5,14 +5,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeleteDriver extends JFrame {
+public class DeleteOffers extends JFrame {
     private JComboBox<String> dropdownList1;
     private JButton deleteButton;
     private JButton helpButton;
 
-    public DeleteDriver()
+    public DeleteOffers()
     {
-        setTitle("Delete data from table: driver");
+        setTitle("Delete data from table: offers");
         setSize(350, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -21,12 +21,12 @@ public class DeleteDriver extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        String[] drivers = getDriversCodes();
+        String[] offers = getOffersCodes();
 
-        JLabel drvAT = new JLabel("Driver AT:");
-        panel.add(drvAT);
+        JLabel offerCode = new JLabel("Offer code:");
+        panel.add(offerCode);
 
-        dropdownList1 = new JComboBox<>(drivers);
+        dropdownList1 = new JComboBox<>(offers);
         panel.add(dropdownList1);
 
         helpButton = new JButton("Help");
@@ -38,10 +38,10 @@ public class DeleteDriver extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String driver = (String) dropdownList1.getSelectedItem();
+                String offer = (String) dropdownList1.getSelectedItem();
 
-                String deleteDriverStatus = deleteDriverFunction(driver);
-                JOptionPane.showMessageDialog(null, deleteDriverStatus);
+                String deleteOfferStatus = deleteOfferFunction(offer);
+                JOptionPane.showMessageDialog(null, deleteOfferStatus);
             }
         });
 
@@ -50,7 +50,7 @@ public class DeleteDriver extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Delete options:
-                        1. Choose a driver AT to delete from the table.
+                        1. Choose an offer code to delete from the table.
                         2. Leave the field empty to delete all records of the table!""";
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
@@ -58,7 +58,7 @@ public class DeleteDriver extends JFrame {
 
     }
 
-    private String deleteDriverFunction(String drvAT)
+    private String deleteOfferFunction(String offerCode)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -71,8 +71,8 @@ public class DeleteDriver extends JFrame {
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
             String sql = "";
 
-            if(drvAT.equals("")) {
-                sql = "DELETE FROM driver";
+            if(offerCode.equals("")) {
+                sql = "DELETE FROM offers";
                 PreparedStatement statement = connection.prepareStatement(sql);
 
                 String message = "Are you sure you want to delete all records in the table?";
@@ -83,9 +83,9 @@ public class DeleteDriver extends JFrame {
                     int rowsAffected = statement.executeUpdate();
 
                     if (rowsAffected > 0)
-                        deleteStatus = "Driver record(s) deleted successfully!";
+                        deleteStatus = "Offers record(s) deleted successfully!";
                     else
-                        deleteStatus = "Driver table has no records to delete!";
+                        deleteStatus = "Offers table has no records to delete!";
                 }
                 else
                     deleteStatus = "Deletion aborted.";
@@ -95,14 +95,14 @@ public class DeleteDriver extends JFrame {
             }
             else
             {
-                sql = "DELETE FROM driver WHERE drv_AT=?";
+                sql = "DELETE FROM offers WHERE offer_code=?";
                 PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setString(1, drvAT);
+                statement.setString(1, offerCode);
 
                 int rowsAffected = statement.executeUpdate();
 
                 if(rowsAffected > 0)
-                    deleteStatus = "Driver record deleted successfully!";
+                    deleteStatus = "Offer record deleted successfully!";
 
 
                 statement.close();
@@ -118,26 +118,26 @@ public class DeleteDriver extends JFrame {
         return deleteStatus;
     }
 
-    private String[] getDriversCodes()
+    private String[] getOffersCodes()
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> driversCodes = new ArrayList<>();
-        driversCodes.add("");
+        List<String> offerCodes = new ArrayList<>();
+        offerCodes.add("");
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT drv_AT FROM driver";
+            String sql = "SELECT offer_code FROM offers";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("drv_AT");
-                driversCodes.add(currCode);
+                String currCode = resultSet.getString("offer_code");
+                offerCodes.add(currCode);
             }
 
             resultSet.close();
@@ -148,6 +148,13 @@ public class DeleteDriver extends JFrame {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
 
-        return driversCodes.toArray(new String[driversCodes.size()]);
+        return offerCodes.toArray(new String[offerCodes.size()]);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() { new DeleteOffers().setVisible(true);}
+        });
     }
 }

@@ -5,15 +5,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeleteDriver extends JFrame {
+public class DeleteManages extends JFrame {
     private JComboBox<String> dropdownList1;
     private JButton deleteButton;
     private JButton helpButton;
 
-    public DeleteDriver()
+    public DeleteManages()
     {
-        setTitle("Delete data from table: driver");
-        setSize(350, 150);
+        setTitle("Delete data from table: manages");
+        setSize(370, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -21,12 +21,12 @@ public class DeleteDriver extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        String[] drivers = getDriversCodes();
+        String[] managers = getManagersCodes();
 
-        JLabel drvAT = new JLabel("Driver AT:");
+        JLabel drvAT = new JLabel("Manager AT:");
         panel.add(drvAT);
 
-        dropdownList1 = new JComboBox<>(drivers);
+        dropdownList1 = new JComboBox<>(managers);
         panel.add(dropdownList1);
 
         helpButton = new JButton("Help");
@@ -38,10 +38,19 @@ public class DeleteDriver extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String driver = (String) dropdownList1.getSelectedItem();
+                String selected = (String) dropdownList1.getSelectedItem();
+                String manager;
 
-                String deleteDriverStatus = deleteDriverFunction(driver);
-                JOptionPane.showMessageDialog(null, deleteDriverStatus);
+                if(!selected.equals(""))
+                {
+                    String[] parts = selected.split(",");
+                    manager = parts[0];
+                }
+                else
+                    manager = "";
+
+                String deleteManagerStatus = deleteManagerFunction(manager);
+                JOptionPane.showMessageDialog(null, deleteManagerStatus);
             }
         });
 
@@ -50,7 +59,7 @@ public class DeleteDriver extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Delete options:
-                        1. Choose a driver AT to delete from the table.
+                        1. Choose a manager AT to delete from the table.
                         2. Leave the field empty to delete all records of the table!""";
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
@@ -58,7 +67,7 @@ public class DeleteDriver extends JFrame {
 
     }
 
-    private String deleteDriverFunction(String drvAT)
+    private String deleteManagerFunction(String mngAT)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -71,8 +80,8 @@ public class DeleteDriver extends JFrame {
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
             String sql = "";
 
-            if(drvAT.equals("")) {
-                sql = "DELETE FROM driver";
+            if(mngAT.equals("")) {
+                sql = "DELETE FROM manages";
                 PreparedStatement statement = connection.prepareStatement(sql);
 
                 String message = "Are you sure you want to delete all records in the table?";
@@ -83,9 +92,9 @@ public class DeleteDriver extends JFrame {
                     int rowsAffected = statement.executeUpdate();
 
                     if (rowsAffected > 0)
-                        deleteStatus = "Driver record(s) deleted successfully!";
+                        deleteStatus = "Manages record(s) deleted successfully!";
                     else
-                        deleteStatus = "Driver table has no records to delete!";
+                        deleteStatus = "Manages table has no records to delete!";
                 }
                 else
                     deleteStatus = "Deletion aborted.";
@@ -95,14 +104,14 @@ public class DeleteDriver extends JFrame {
             }
             else
             {
-                sql = "DELETE FROM driver WHERE drv_AT=?";
+                sql = "DELETE FROM manages where mng_adm_AT=?";
                 PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setString(1, drvAT);
+                statement.setString(1, mngAT);
 
                 int rowsAffected = statement.executeUpdate();
 
                 if(rowsAffected > 0)
-                    deleteStatus = "Driver record deleted successfully!";
+                    deleteStatus = "Manages record deleted successfully!";
 
 
                 statement.close();
@@ -118,26 +127,29 @@ public class DeleteDriver extends JFrame {
         return deleteStatus;
     }
 
-    private String[] getDriversCodes()
+    private String[] getManagersCodes()
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> driversCodes = new ArrayList<>();
-        driversCodes.add("");
+        List<String> managers = new ArrayList<>();
+        managers.add("");
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT drv_AT FROM driver";
+            String sql = "SELECT mng_adm_AT, mng_br_code FROM manages";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("drv_AT");
-                driversCodes.add(currCode);
+                String currMng = resultSet.getString("mng_adm_AT");
+                String brCode = resultSet.getString("mng_br_code");
+                String info = currMng + ", Manages Branch: " + brCode;
+                System.out.println(info);
+                managers.add(info);
             }
 
             resultSet.close();
@@ -148,6 +160,6 @@ public class DeleteDriver extends JFrame {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
 
-        return driversCodes.toArray(new String[driversCodes.size()]);
+        return managers.toArray(new String[managers.size()]);
     }
 }

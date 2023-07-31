@@ -5,15 +5,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeleteDriver extends JFrame {
+public class DeletePhones extends JFrame {
     private JComboBox<String> dropdownList1;
     private JButton deleteButton;
     private JButton helpButton;
 
-    public DeleteDriver()
+    public DeletePhones()
     {
-        setTitle("Delete data from table: driver");
-        setSize(350, 150);
+        setTitle("Delete data from table: phones");
+        setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -21,12 +21,12 @@ public class DeleteDriver extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        String[] drivers = getDriversCodes();
+        String[] phones = getPhones();
 
-        JLabel drvAT = new JLabel("Driver AT:");
+        JLabel drvAT = new JLabel("Branch Phone:");
         panel.add(drvAT);
 
-        dropdownList1 = new JComboBox<>(drivers);
+        dropdownList1 = new JComboBox<>(phones);
         panel.add(dropdownList1);
 
         helpButton = new JButton("Help");
@@ -38,10 +38,26 @@ public class DeleteDriver extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String driver = (String) dropdownList1.getSelectedItem();
+                String selected = (String) dropdownList1.getSelectedItem();
+                String branch;
+                String phNumber;
 
-                String deleteDriverStatus = deleteDriverFunction(driver);
-                JOptionPane.showMessageDialog(null, deleteDriverStatus);
+                if(!selected.equals(""))
+                {
+                    String[] parts = selected.split(",");
+                    branch = parts[0];
+
+                    String[] phoneParts = parts[1].split(": ");
+                    phNumber = phoneParts[1];
+                }
+                else
+                {
+                    branch = "";
+                    phNumber = "";
+                }
+
+                String deletePhoneStatus = deletePhonesFunction(branch, phNumber);
+                JOptionPane.showMessageDialog(null, deletePhoneStatus);
             }
         });
 
@@ -50,7 +66,7 @@ public class DeleteDriver extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Delete options:
-                        1. Choose a driver AT to delete from the table.
+                        1. Choose a branch code to delete its phone from the table.
                         2. Leave the field empty to delete all records of the table!""";
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
@@ -58,7 +74,7 @@ public class DeleteDriver extends JFrame {
 
     }
 
-    private String deleteDriverFunction(String drvAT)
+    private String deletePhonesFunction(String brCode, String phone)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -71,8 +87,8 @@ public class DeleteDriver extends JFrame {
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
             String sql = "";
 
-            if(drvAT.equals("")) {
-                sql = "DELETE FROM driver";
+            if(brCode.equals("") && phone.equals("")) {
+                sql = "DELETE FROM phones";
                 PreparedStatement statement = connection.prepareStatement(sql);
 
                 String message = "Are you sure you want to delete all records in the table?";
@@ -83,9 +99,9 @@ public class DeleteDriver extends JFrame {
                     int rowsAffected = statement.executeUpdate();
 
                     if (rowsAffected > 0)
-                        deleteStatus = "Driver record(s) deleted successfully!";
+                        deleteStatus = "Phones record(s) deleted successfully!";
                     else
-                        deleteStatus = "Driver table has no records to delete!";
+                        deleteStatus = "Phones table has no records to delete!";
                 }
                 else
                     deleteStatus = "Deletion aborted.";
@@ -95,15 +111,15 @@ public class DeleteDriver extends JFrame {
             }
             else
             {
-                sql = "DELETE FROM driver WHERE drv_AT=?";
+                sql = "DELETE FROM phones WHERE ph_br_code=? AND ph_number=?";
                 PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setString(1, drvAT);
+                statement.setString(1, brCode);
+                statement.setString(2, phone);
 
                 int rowsAffected = statement.executeUpdate();
 
                 if(rowsAffected > 0)
-                    deleteStatus = "Driver record deleted successfully!";
-
+                    deleteStatus = "Phone record deleted successfully!";
 
                 statement.close();
                 connection.close();
@@ -118,26 +134,28 @@ public class DeleteDriver extends JFrame {
         return deleteStatus;
     }
 
-    private String[] getDriversCodes()
+    private String[] getPhones()
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> driversCodes = new ArrayList<>();
-        driversCodes.add("");
+        List<String> phones = new ArrayList<>();
+        phones.add("");
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT drv_AT FROM driver";
+            String sql = "SELECT ph_br_code,ph_number FROM phones";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("drv_AT");
-                driversCodes.add(currCode);
+                String currCode = resultSet.getString("ph_br_code");
+                String currNumber = resultSet.getString("ph_number");
+                String data = currCode + ", Number: " + currNumber;
+                phones.add(data);
             }
 
             resultSet.close();
@@ -148,6 +166,12 @@ public class DeleteDriver extends JFrame {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
 
-        return driversCodes.toArray(new String[driversCodes.size()]);
+        return phones.toArray(new String[phones.size()]);
+    }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() { new DeletePhones().setVisible(true);}
+        });
     }
 }
