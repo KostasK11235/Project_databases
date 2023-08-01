@@ -71,6 +71,7 @@ CREATE PROCEDURE del_admin(IN name VARCHAR(20),IN lname VARCHAR(20))
 BEGIN
 	DECLARE admin_id CHAR(10);
 	DECLARE admin_property ENUM('LOGISTICS','ADMINISTRATIVE','ACCOUNTING');
+	DECLARE found BOOLEAN DEFAULT FALSE;
 
 	SELECT w.wrk_AT,a.adm_type INTO admin_id,admin_property 
 	FROM worker AS w 
@@ -78,11 +79,17 @@ BEGIN
 	WHERE w.wrk_name=name and w.wrk_lname=lname;
 
 	IF (admin_id IS NOT NULL) THEN
+		SET found = TRUE;
 		IF (admin_property='ADMINISTRATIVE') THEN
-			SELECT 'Selected person is branch manager. Deletion of a branch manager is not permitted';
+			SELECT 'Selected person is branch manager. Deletion of a branch manager is not permitted' AS message;
 		ELSE
 			DELETE FROM worker WHERE wrk_AT=admin_id;
+			SELECT 'Person successfully deleted' AS message;
 		END IF;
+	END IF;
+
+	IF(NOT found) THEN
+		SELECT 'Person not found' AS message;
 	END IF;
 END$
 DELIMITER ;
@@ -122,14 +129,5 @@ BEGIN
   END IF;
 
 END $
-
-DELIMITER ;
-
-/* Αλλαγή AT_IT στον πίνακα it_logs */
-DELIMITER $
-CREATE PROCEDURE alt_it_at(IN userId CHAR)
-BEGIN
-	UPDATE it_logs SET IT_id=userId WHERE log_id=(SELECT MAX(log_id) FROM it_logs);
-END$
 
 DELIMITER ;

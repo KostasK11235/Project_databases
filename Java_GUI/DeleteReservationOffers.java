@@ -56,50 +56,44 @@ public class DeleteReservationOffers extends JFrame {
 
     }
 
-    private String deleteReservationOfferFunction(String resCode)
-    {
+    private String deleteReservationOfferFunction(String resCode) {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
         String dbPassword = "";
 
         String deleteStatus = "";
 
-        try
-        {
-            Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
             String sql = "";
 
-            if(resCode.equals("")) {
+            if (resCode.equals("")) {
                 sql = "DELETE FROM reservation_offers";
                 PreparedStatement statement = connection.prepareStatement(sql);
 
                 String message = "Are you sure you want to delete all records in the table?";
                 int choice = JOptionPane.showConfirmDialog(null, message, "Confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
 
-                if(choice == 0)
-                {
+                if (choice == 0) {
                     int rowsAffected = statement.executeUpdate();
 
                     if (rowsAffected > 0)
                         deleteStatus = "Reservation offers record(s) deleted successfully!";
                     else
                         deleteStatus = "Reservation offers table has no records to delete!";
-                }
-                else
+                } else
                     deleteStatus = "Deletion aborted.";
 
                 statement.close();
                 connection.close();
-            }
-            else
-            {
+            } else {
                 sql = "DELETE FROM reservation_offers WHERE res_offer_code=?";
                 PreparedStatement statement = connection.prepareStatement(sql);
                 statement.setString(1, resCode);
 
                 int rowsAffected = statement.executeUpdate();
 
-                if(rowsAffected > 0)
+                if (rowsAffected > 0)
                     deleteStatus = "Reservation offers record(s) deleted successfully!";
 
 
@@ -107,19 +101,10 @@ public class DeleteReservationOffers extends JFrame {
                 connection.close();
             }
 
-        }
-        catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             deleteStatus = ex.getMessage();
         }
 
         return deleteStatus;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new DeleteReservationOffers().setVisible(true);}
-        });
     }
 }

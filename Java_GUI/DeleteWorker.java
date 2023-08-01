@@ -5,15 +5,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeleteLanguage extends JFrame {
+public class DeleteWorker extends JFrame {
     private JComboBox<String> dropdownList1;
     private JButton deleteButton;
     private JButton helpButton;
 
-    public DeleteLanguage()
+    public DeleteWorker()
     {
-        setTitle("Delete data from table: languages");
-        setSize(400, 150);
+        setTitle("Delete data from table: worker");
+        setSize(500, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -21,12 +21,12 @@ public class DeleteLanguage extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        String[] guides = getGuidesCodes();
+        String[] workers = getWorkersID();
 
-        JLabel drvAT = new JLabel("Guide AT:");
-        panel.add(drvAT);
+        JLabel wrkID = new JLabel("Worker AT:");
+        panel.add(wrkID);
 
-        dropdownList1 = new JComboBox<>(guides);
+        dropdownList1 = new JComboBox<>(workers);
         panel.add(dropdownList1);
 
         helpButton = new JButton("Help");
@@ -39,25 +39,20 @@ public class DeleteLanguage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selected = (String) dropdownList1.getSelectedItem();
-                String guide;
-                String lng;
+                String wrkAT;
 
                 if(!selected.equals(""))
                 {
                     String[] parts = selected.split(",");
-                    guide = parts[0];
-
-                    String[] lngParts = parts[1].split(": ");
-                    lng = lngParts[1];
+                    wrkAT = parts[0];
                 }
                 else
                 {
-                    guide = "";
-                    lng = "";
+                    wrkAT = "";
                 }
 
-                String deleteLanguageStatus = deleteLanguageFunction(guide, lng);
-                JOptionPane.showMessageDialog(null, deleteLanguageStatus);
+                String deleteWorkerStatus = deleteWorkerFunction(wrkAT);
+                JOptionPane.showMessageDialog(null, deleteWorkerStatus);
             }
         });
 
@@ -66,7 +61,7 @@ public class DeleteLanguage extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Delete options:
-                        1. Choose a language guide AT to delete from the table.
+                        1. Choose a worker AT to delete from the table.
                         2. Leave the field empty to delete all records of the table!""";
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
@@ -74,7 +69,7 @@ public class DeleteLanguage extends JFrame {
 
     }
 
-    private String deleteLanguageFunction(String guiAT, String lng)
+    private String deleteWorkerFunction(String wrkAT)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -87,8 +82,8 @@ public class DeleteLanguage extends JFrame {
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
             String sql = "";
 
-            if(guiAT.equals("") && lng.equals("")) {
-                sql = "DELETE FROM languages";
+            if(wrkAT.equals("")) {
+                sql = "DELETE FROM worker";
                 PreparedStatement statement = connection.prepareStatement(sql);
 
                 String message = "Are you sure you want to delete all records in the table?";
@@ -99,9 +94,9 @@ public class DeleteLanguage extends JFrame {
                     int rowsAffected = statement.executeUpdate();
 
                     if (rowsAffected > 0)
-                        deleteStatus = "Language record(s) deleted successfully!";
+                        deleteStatus = "Worker record(s) deleted successfully!";
                     else
-                        deleteStatus = "Language table has no records to delete!";
+                        deleteStatus = "Worker table has no records to delete!";
                 }
                 else
                     deleteStatus = "Deletion aborted.";
@@ -111,15 +106,57 @@ public class DeleteLanguage extends JFrame {
             }
             else
             {
-                sql = "DELETE FROM languages WHERE lng_gui_AT=? AND lng_language=?";
+                sql = "SELECT * FROM admin WHERE adm_AT=?";
                 PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setString(1, guiAT);
-                statement.setString(2, lng);
+                statement.setString(1, wrkAT);
 
-                int rowsAffected = statement.executeUpdate();
+                ResultSet resultSet = statement.executeQuery();
 
-                if(rowsAffected > 0)
-                    deleteStatus = "Language record(s) deleted successfully!";
+                if(!resultSet.first())
+                {
+                    sql = "DELETE FROM worker WHERE wrk_AT=?";
+                    statement = connection.prepareStatement(sql);
+                    statement.setString(1, wrkAT);
+
+                    int rowsAffected = statement.executeUpdate();
+
+                    if(rowsAffected>0)
+                        deleteStatus = "Worker record deleted successfully!";
+                }
+                else
+                {
+                    try
+                    {
+                        sql = "SELECT wrk_name,wrk_lname FROM worker WHERE wrk_AT=?";
+                        statement = connection.prepareStatement(sql);
+                        statement.setString(1, wrkAT);
+
+                        resultSet = statement.executeQuery();
+
+                        resultSet.next();
+                        String admin_name = resultSet.getString("wrk_name");
+                        String admin_lname = resultSet.getString("wrk_lname");
+
+                        String sql1 = "{CALL del_admin(?, ?)}";
+                        CallableStatement statement1 = connection.prepareCall(sql1);
+                        statement1.setString(1, admin_name);
+                        statement1.setString(2, admin_lname);
+
+                        boolean hasResults = statement1.execute();
+
+                        if (hasResults) {
+                            ResultSet resultSet1 = statement1.getResultSet();
+                            if (resultSet1.next()) {
+                                deleteStatus = resultSet1.getString("message");
+                            }
+                        }
+
+                        statement1.close();
+                        connection.close();
+                    } catch (SQLException ex) {
+                        deleteStatus = ex.getMessage();
+                    }
+                }
 
                 statement.close();
                 connection.close();
@@ -134,7 +171,7 @@ public class DeleteLanguage extends JFrame {
         return deleteStatus;
     }
 
-    private String[] getGuidesCodes()
+    private String[] getWorkersID()
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -145,17 +182,18 @@ public class DeleteLanguage extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT lng_gui_AT,lng_language FROM languages";
+            String sql = "SELECT wrk_AT,wrk_name,wrk_lname FROM worker";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("lng_gui_AT");
-                String currLng = resultSet.getString("lng_language");
-                String data = currCode + ", Speaks: " + currLng;
-                guideCodes.add(data);
+                String currCode = resultSet.getString("wrk_AT");
+                String name = resultSet.getString("wrk_name");
+                String lastName = resultSet.getString("wrk_lname");
+                String info = currCode + ", Name\\Lastname: " + name + "-" + lastName;
+                guideCodes.add(info);
             }
 
             resultSet.close();
@@ -167,5 +205,12 @@ public class DeleteLanguage extends JFrame {
         }
 
         return guideCodes.toArray(new String[guideCodes.size()]);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() { new DeleteWorker().setVisible(true);}
+        });
     }
 }
