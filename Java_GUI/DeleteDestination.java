@@ -66,7 +66,6 @@ public class DeleteDestination extends JFrame {
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
         });
-
     }
 
     private String deleteDestinationFunction(String dstID, String currAdmin)
@@ -192,7 +191,7 @@ public class DeleteDestination extends JFrame {
             {
                 String currCode = resultSet.getString("dst_id");
                 String currName = resultSet.getString("dst_name");
-                String info = currCode + ", Name: " + currName;
+                String info = currCode + ", Destination: " + currName;
                 guideCodes.add(info);
             }
 
@@ -203,7 +202,6 @@ public class DeleteDestination extends JFrame {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-
         return guideCodes.toArray(new String[guideCodes.size()]);
     }
 }

@@ -13,7 +13,7 @@ public class DeleteDriver extends JFrame {
     public DeleteDriver()
     {
         setTitle("Delete data from table: driver");
-        setSize(350, 150);
+        setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -38,7 +38,18 @@ public class DeleteDriver extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String driver = (String) dropdownList1.getSelectedItem();
+                String selected = (String) dropdownList1.getSelectedItem();
+                String driver;
+
+                if(!selected.equals(""))
+                {
+                    String[] parts = selected.split(",");
+                    driver = parts[0];
+                }
+                else
+                {
+                    driver = "";
+                }
 
                 String deleteDriverStatus = deleteDriverFunction(driver);
                 JOptionPane.showMessageDialog(null, deleteDriverStatus);
@@ -129,15 +140,20 @@ public class DeleteDriver extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT drv_AT FROM driver";
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname,w.wrk_br_code FROM worker AS w INNER JOIN driver AS d" +
+                    " ON w.wrk_AT=d.drv_AT";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("drv_AT");
-                driversCodes.add(currCode);
+                String currAT = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String currCode = resultSet.getString("w.wrk_br_code");
+                String info = currAT + ", Name-Lastname: " + name + "-" + lname + ", Branch: " + currCode;
+                driversCodes.add(info);
             }
 
             resultSet.close();

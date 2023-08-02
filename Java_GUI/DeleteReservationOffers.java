@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeleteReservationOffers extends JFrame {
-    private JTextField field1;
+    private JComboBox<String> dropdownList1;
     private JButton deleteButton;
     private JButton helpButton;
 
@@ -21,11 +21,13 @@ public class DeleteReservationOffers extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
+        String[] reservations = getReservationOffers();
+
         JLabel offerCode = new JLabel("Reservation code:");
         panel.add(offerCode);
 
-        field1 = new JTextField(15);
-        panel.add(field1);
+        dropdownList1 = new JComboBox<>(reservations);
+        panel.add(dropdownList1);
 
         helpButton = new JButton("Help");
         panel.add(helpButton);
@@ -36,9 +38,20 @@ public class DeleteReservationOffers extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String code = field1.getText();
+                String selected = (String) dropdownList1.getSelectedItem();
+                String resCode;
 
-                String deleteReservationOfferStatus = deleteReservationOfferFunction(code);
+                if(!selected.equals(""))
+                {
+                    String[] parts = selected.split(",");
+                    resCode = parts[0];
+                }
+                else
+                {
+                    resCode = "";
+                }
+
+                String deleteReservationOfferStatus = deleteReservationOfferFunction(resCode);
                 JOptionPane.showMessageDialog(null, deleteReservationOfferStatus);
             }
         });
@@ -48,7 +61,7 @@ public class DeleteReservationOffers extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Delete options:
-                        1. Insert a reservation code to delete from the table.
+                        1. Choose a reservation code to delete from the table.
                         2. Leave the field empty to delete all records of the table!""";
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
@@ -96,7 +109,6 @@ public class DeleteReservationOffers extends JFrame {
                 if (rowsAffected > 0)
                     deleteStatus = "Reservation offers record(s) deleted successfully!";
 
-
                 statement.close();
                 connection.close();
             }
@@ -106,5 +118,41 @@ public class DeleteReservationOffers extends JFrame {
         }
 
         return deleteStatus;
+    }
+
+    private String[] getReservationOffers()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> guideCodes = new ArrayList<>();
+        guideCodes.add("");
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT res_offer_code,cust_name,cust_lname FROM reservation_offers";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("res_offer_code");
+                String name = resultSet.getString("cust_name");
+                String lname = resultSet.getString("cust_lname");
+                String info = currCode + ", Name-Lastname: " + name + "-" + lname;
+                guideCodes.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+
+        return guideCodes.toArray(new String[guideCodes.size()]);
     }
 }

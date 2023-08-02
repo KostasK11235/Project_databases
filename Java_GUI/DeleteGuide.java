@@ -13,7 +13,7 @@ public class DeleteGuide extends JFrame {
     public DeleteGuide()
     {
         setTitle("Delete data from table: guide");
-        setSize(350, 150);
+        setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -38,7 +38,18 @@ public class DeleteGuide extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String guide = (String) dropdownList1.getSelectedItem();
+                String selected = (String) dropdownList1.getSelectedItem();
+                String guide;
+
+                if(!selected.equals(""))
+                {
+                    String[] parts = selected.split(",");
+                    guide = parts[0];
+                }
+                else
+                {
+                    guide = "";
+                }
 
                 String deleteGuideStatus = deleteGuideFunction(guide);
                 JOptionPane.showMessageDialog(null, deleteGuideStatus);
@@ -129,15 +140,20 @@ public class DeleteGuide extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT gui_AT FROM guide";
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname,w.wrk_br_code FROM worker AS w INNER JOIN guide AS g" +
+                    " ON w.wrk_AT=g.gui_AT";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("gui_AT");
-                guideCodes.add(currCode);
+                String currAT = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String currCode = resultSet.getString("w.wrk_br_code");
+                String info = currAT + ", Name-Lastname: " + name + "-" + lname + ", Branch: " + currCode;
+                guideCodes.add(info);
             }
 
             resultSet.close();

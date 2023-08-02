@@ -61,7 +61,7 @@ public class DeleteIT extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Delete options:
-                        1. Choose a IT id to delete from the table.
+                        1. Choose an IT id to delete from the table.
                         2. Leave the field empty to delete all records of the table!""";
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
@@ -118,7 +118,6 @@ public class DeleteIT extends JFrame {
                 statement.close();
                 connection.close();
             }
-
         }
         catch (SQLException ex)
         {
@@ -139,17 +138,19 @@ public class DeleteIT extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT wrk_AT,wrk_name,wrk_lname FROM worker AS w INNER JOIN it AS i ON w.wrk_at=i.IT_AT";
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname,w.wrk_br_code FROM worker AS w INNER JOIN it AS i " +
+                    " ON w.wrk_at=i.IT_AT";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("wrk_AT");
-                String name = resultSet.getString("wrk_name");
-                String lName = resultSet.getString("wrk_lname");
-                String info = currCode + ", Name-Lastname: " + name + "-" + lName;
+                String currCode = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lName = resultSet.getString("w.wrk_lname");
+                String brCode = resultSet.getString("w.wrk_br_code");
+                String info = currCode + ", Name-Lastname: " + name + "-" + lName + ", Branch: " + brCode;
                 guideCodes.add(info);
             }
 
@@ -162,12 +163,5 @@ public class DeleteIT extends JFrame {
         }
 
         return guideCodes.toArray(new String[guideCodes.size()]);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new DeleteIT().setVisible(true);}
-        });
     }
 }

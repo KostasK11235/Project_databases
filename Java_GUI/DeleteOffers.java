@@ -38,7 +38,18 @@ public class DeleteOffers extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String offer = (String) dropdownList1.getSelectedItem();
+                String selected = (String) dropdownList1.getSelectedItem();
+                String offer;
+
+                if(!selected.equals(""))
+                {
+                    String[] parts = selected.split(",");
+                    offer = parts[0];
+                }
+                else
+                {
+                    offer = "";
+                }
 
                 String deleteOfferStatus = deleteOfferFunction(offer);
                 JOptionPane.showMessageDialog(null, deleteOfferStatus);
@@ -129,15 +140,18 @@ public class DeleteOffers extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT offer_code FROM offers";
+            String sql = "SELECT o.offer_code,d.dst_name FROM offers AS o INNER JOIN destination AS d" +
+                    " ON d.dst_id=o.destination_id";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("offer_code");
-                offerCodes.add(currCode);
+                String currCode = resultSet.getString("o.offer_code");
+                String dstName = resultSet.getString("d.dst_name");
+                String info = currCode + ", Destination: " + dstName;
+                offerCodes.add(info);
             }
 
             resultSet.close();
@@ -149,12 +163,5 @@ public class DeleteOffers extends JFrame {
         }
 
         return offerCodes.toArray(new String[offerCodes.size()]);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new DeleteOffers().setVisible(true);}
-        });
     }
 }

@@ -189,16 +189,18 @@ public class DeleteTravelTo extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT to_tr_id,to_dst_id FROM travel_to";
+            String sql = "SELECT t.to_tr_id,t.to_dst_id,d.dst_name FROM travel_to AS t INNER JOIN destination AS d" +
+                    " ON d.dst_id=t.to_dst_id";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("to_tr_id");
-                String seatNumber = resultSet.getString("to_dst_id");
-                String info = currCode + ", Destination ID: " + seatNumber;
+                String currCode = resultSet.getString("t.to_tr_id");
+                String dstId = resultSet.getString("t.to_dst_id");
+                String dstName = resultSet.getString("d.dst_name");
+                String info = currCode + ", Destination ID: " + dstId + ", Name: " + dstName;
                 guideCodes.add(info);
             }
 

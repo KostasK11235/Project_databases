@@ -50,7 +50,7 @@ public class MainAppWindow extends JFrame {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        new SelectTableWindow().setVisible(true);
+                        new SelectTableWindow("insert", loggedUser).setVisible(true);
                     }
                 });
             }
@@ -70,7 +70,12 @@ public class MainAppWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO: Perform DELETE FROM TABLE action
-                JOptionPane.showMessageDialog(null, "DELETE FROM TABLE button clicked!");
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new SelectTableWindow("delete", loggedUser).setVisible(true);
+                    }
+                });
             }
         });
 
@@ -88,6 +93,7 @@ public class MainAppWindow extends JFrame {
             }
         });
 
+        // Πρέπει να βάλουμε και την πρώτη procedure απο το 3.1.3.4. a)
         // Get customer(s) data from reservation_offers Button Action Listener
         getCustomersButton.addActionListener(new ActionListener() {
             @Override

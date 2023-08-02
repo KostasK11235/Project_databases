@@ -13,7 +13,7 @@ public class DeleteManages extends JFrame {
     public DeleteManages()
     {
         setTitle("Delete data from table: manages");
-        setSize(370, 150);
+        setSize(420, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -138,17 +138,19 @@ public class DeleteManages extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT mng_adm_AT, mng_br_code FROM manages";
+            String sql = "SELECT m.mng_adm_AT,w.wrk_name,w.wrk_lname,m.mng_br_code FROM worker AS w " +
+                    " INNER JOIN manages AS m ON w.wrk_AT=m.mng_adm_AT";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currMng = resultSet.getString("mng_adm_AT");
-                String brCode = resultSet.getString("mng_br_code");
-                String info = currMng + ", Manages Branch: " + brCode;
-                System.out.println(info);
+                String currMng = resultSet.getString("m.mng_adm_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String brCode = resultSet.getString("m.mng_br_code");
+                String info = currMng + ", Name-Lastname: " + name + "-" + lname + ", Manages Branch: " + brCode;
                 managers.add(info);
             }
 

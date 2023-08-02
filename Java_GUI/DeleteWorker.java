@@ -192,7 +192,7 @@ public class DeleteWorker extends JFrame {
                 String currCode = resultSet.getString("wrk_AT");
                 String name = resultSet.getString("wrk_name");
                 String lastName = resultSet.getString("wrk_lname");
-                String info = currCode + ", Name\\Lastname: " + name + "-" + lastName;
+                String info = currCode + ", Name-Lastname: " + name + "-" + lastName;
                 guideCodes.add(info);
             }
 
@@ -205,12 +205,5 @@ public class DeleteWorker extends JFrame {
         }
 
         return guideCodes.toArray(new String[guideCodes.size()]);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new DeleteWorker().setVisible(true);}
-        });
     }
 }

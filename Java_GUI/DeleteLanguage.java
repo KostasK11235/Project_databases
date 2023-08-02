@@ -145,16 +145,19 @@ public class DeleteLanguage extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT lng_gui_AT,lng_language FROM languages";
+            String sql = "SELECT l.lng_gui_AT,w.wrk_name,w.wrk_lname,l.lng_language FROM worker AS w " +
+                    " INNER JOIN languages AS l ON l.lng_gui_AT=w.wrk_AT";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("lng_gui_AT");
-                String currLng = resultSet.getString("lng_language");
-                String data = currCode + ", Speaks: " + currLng;
+                String currCode = resultSet.getString("l.lng_gui_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String currLng = resultSet.getString("l.lng_language");
+                String data = currCode + ", Name-Lastname: " + name + "-" + lname + ", Speaks: " + currLng;
                 guideCodes.add(data);
             }
 

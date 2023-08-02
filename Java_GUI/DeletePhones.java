@@ -124,7 +124,6 @@ public class DeletePhones extends JFrame {
                 statement.close();
                 connection.close();
             }
-
         }
         catch (SQLException ex)
         {
@@ -167,11 +166,5 @@ public class DeletePhones extends JFrame {
         }
 
         return phones.toArray(new String[phones.size()]);
-    }
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new DeletePhones().setVisible(true);}
-        });
     }
 }

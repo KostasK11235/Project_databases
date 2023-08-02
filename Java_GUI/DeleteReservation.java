@@ -168,7 +168,6 @@ public class DeleteReservation extends JFrame {
                 statement.close();
                 connection.close();
             }
-
         }
         catch (SQLException ex)
         {
@@ -211,12 +210,5 @@ public class DeleteReservation extends JFrame {
         }
 
         return guideCodes.toArray(new String[guideCodes.size()]);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new DeleteReservation("AT051").setVisible(true);}
-        });
     }
 }

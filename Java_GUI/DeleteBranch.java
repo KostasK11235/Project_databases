@@ -38,7 +38,18 @@ public class DeleteBranch extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String branch = (String) dropdownList1.getSelectedItem();
+                String selected = (String) dropdownList1.getSelectedItem();
+                String branch;
+
+                if(!selected.equals(""))
+                {
+                    String[] parts = selected.split(",");
+                    branch = parts[0];
+                }
+                else
+                {
+                    branch = "";
+                }
 
                 String deleteBranchStatus = deleteBranchFunction(branch);
                 JOptionPane.showMessageDialog(null, deleteBranchStatus);
@@ -71,7 +82,8 @@ public class DeleteBranch extends JFrame {
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
             String sql = "";
 
-            if(("".equalsIgnoreCase(brCode) || "NULL".equalsIgnoreCase(brCode.toLowerCase()))) {
+            if(("".equalsIgnoreCase(brCode)))
+            {
                 sql = "DELETE FROM branch";
                 PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -104,7 +116,6 @@ public class DeleteBranch extends JFrame {
                 if(rowsAffected > 0)
                     deleteStatus = "Branch record deleted successfully!";
 
-
                 statement.close();
                 connection.close();
             }
@@ -114,7 +125,6 @@ public class DeleteBranch extends JFrame {
         {
             deleteStatus = ex.getMessage();
         }
-
         return deleteStatus;
     }
 
@@ -129,7 +139,7 @@ public class DeleteBranch extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT br_code FROM branch";
+            String sql = "SELECT br_code,br_city,br_street FROM branch";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
@@ -137,7 +147,10 @@ public class DeleteBranch extends JFrame {
             while(resultSet.next())
             {
                 String currCode = resultSet.getString("br_code");
-                branchCodes.add(currCode);
+                String city = resultSet.getString("br_city");
+                String street = resultSet.getString("br_street");
+                String info = currCode + ", City: " + city + ", Street: " + street;
+                branchCodes.add(info);
             }
 
             resultSet.close();

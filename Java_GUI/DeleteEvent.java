@@ -158,7 +158,6 @@ public class DeleteEvent extends JFrame {
 
                     statement.executeUpdate();
                 }
-
                 statement.close();
                 connection.close();
             }

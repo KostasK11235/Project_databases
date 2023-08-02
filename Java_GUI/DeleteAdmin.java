@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeleteAdmin extends JFrame{
-    private JTextField field1;
-    private JComboBox<String> dropdownList1;
     private JComboBox<String> dropdownList2;
     private JButton deleteButton;
     private JButton helpButton;
@@ -16,7 +14,7 @@ public class DeleteAdmin extends JFrame{
     public DeleteAdmin()
     {
         setTitle("Delete data from table: admin");
-        setSize(350, 200);
+        setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -24,11 +22,7 @@ public class DeleteAdmin extends JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        String[] adm_types = {"", "LOGISTICS", "ADMINISTRATIVE", "ACCOUNTING"};
         String[] adminsAT = getAdminsAT();
-
-        helpButton = new JButton("Help");
-        panel.add(helpButton);
 
         JLabel admAT = new JLabel("Admin AT:");
         panel.add(admAT);
@@ -36,11 +30,8 @@ public class DeleteAdmin extends JFrame{
         dropdownList2 = new JComboBox<>(adminsAT);
         panel.add(dropdownList2);
 
-        JLabel admType = new JLabel("Admin type:");
-        panel.add(admType);
-
-        dropdownList1 = new JComboBox<>(adm_types);
-        panel.add(dropdownList1);
+        helpButton = new JButton("Help");
+        panel.add(helpButton);
 
         deleteButton = new JButton("Delete");
         panel.add(deleteButton);
@@ -48,10 +39,21 @@ public class DeleteAdmin extends JFrame{
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String admAT = (String) dropdownList2.getSelectedItem();
-                String admType = (String) dropdownList1.getSelectedItem();
+                String selected = (String) dropdownList2.getSelectedItem();
+                String admAT;
 
-                String deleteAdminStatus = deleteAdminFunction(admAT, admType);
+                if(!selected.equals(""))
+                {
+                    String[] parts = selected.split(",");
+                    admAT = parts[0];
+                    System.out.println("AT "+ admAT);
+                }
+                else
+                {
+                    admAT = "";
+                }
+
+                String deleteAdminStatus = deleteAdminFunction(admAT);
                 JOptionPane.showMessageDialog(null, deleteAdminStatus);
             }
         });
@@ -62,13 +64,15 @@ public class DeleteAdmin extends JFrame{
                 String helpMessage = """
                         Delete options:
                         1. Choose an admin AT to delete from the table.
-                        2. Leave the field empty to delete all records of the table!""";
+                        2. Leave the field empty to delete all records of the table!
+                        
+                        (Note!: Managers are not included for being unable to delete!""";
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
         });
     }
 
-    private String deleteAdminFunction(String at, String type)
+    private String deleteAdminFunction(String at)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -81,9 +85,9 @@ public class DeleteAdmin extends JFrame{
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
             String sql = "";
 
-            if(at.equals("") && type.equals(""))
+            if(at.equals(""))
             {
-                sql = "DELETE FROM admin";
+                sql = "DELETE FROM admin WHERE adm_type NOT LIKE 'ADMINISTRATIVE'";
                 PreparedStatement statement = connection.prepareStatement(sql);
 
                 String message = "Are you sure you want to delete all records in the table?";
@@ -104,7 +108,7 @@ public class DeleteAdmin extends JFrame{
                 statement.close();
                 connection.close();
             }
-            else if(type.equals(""))
+            else
             {
                 sql = "DELETE FROM admin WHERE adm_AT=?";
                 PreparedStatement statement = connection.prepareStatement(sql);
@@ -118,21 +122,6 @@ public class DeleteAdmin extends JFrame{
                 statement.close();
                 connection.close();
             }
-            else if(at.equals(""))
-            {
-                sql = "DELETE FROM admin WHERE adm_type=?";
-                PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setString(1, type);
-
-                int rowsAffected = statement.executeUpdate();
-
-                if(rowsAffected > 0)
-                    deleteStatus = "Admin record deleted successfully!";
-
-                statement.close();
-                connection.close();
-            }
-
         }
         catch (SQLException ex)
         {
@@ -153,15 +142,20 @@ public class DeleteAdmin extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT adm_AT FROM admin";
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname,a.adm_type FROM worker AS w INNER JOIN admin AS a" +
+                    " ON w.wrk_AT=a.adm_AT AND a.adm_type NOT LIKE 'ADMINISTRATIVE'";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("adm_AT");
-                admins.add(currCode);
+                String currCode = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String type = resultSet.getString("a.adm_type");
+                String info = currCode + ", Name-Lastname: " + name + "-" + lname + ", Type: " + type;
+                admins.add(info);
             }
 
             resultSet.close();
