@@ -291,11 +291,4 @@ public class UpdateIT extends JFrame{
 
         return String.format("%04d-%02d-%02d", year, month, day);
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new UpdateIT().setVisible(true); }
-        });
-    }
 }
