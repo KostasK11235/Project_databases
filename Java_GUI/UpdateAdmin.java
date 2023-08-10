@@ -63,8 +63,8 @@ public class UpdateAdmin extends JFrame{
                 String[] parts = selectedAT.split(",");
                 String admAT = parts[0];
 
-                String deleteAdminStatus = updateAdminFunction(admAT, type, diploma);
-                JOptionPane.showMessageDialog(null, deleteAdminStatus);
+                String updateAdminStatus = updateAdminFunction(admAT, type, diploma);
+                JOptionPane.showMessageDialog(null, updateAdminStatus);
             }
         });
 

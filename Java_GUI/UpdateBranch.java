@@ -58,8 +58,8 @@ public class UpdateBranch extends JFrame{
                 String street = field1.getText();
                 String city = field2.getText();
 
-                String deleteAdminStatus = updateBranchFunction(branch, street, city);
-                JOptionPane.showMessageDialog(null, deleteAdminStatus);
+                String updateBranchStatus = updateBranchFunction(branch, street, city);
+                JOptionPane.showMessageDialog(null, updateBranchStatus);
             }
         });
 

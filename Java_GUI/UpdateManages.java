@@ -53,8 +53,8 @@ public class UpdateManages extends JFrame{
                 String[] parts = selectedAT.split(",");
                 String admAT = parts[0];
 
-                String deleteAdminStatus = updateManagesFunction(admAT, branch);
-                JOptionPane.showMessageDialog(null, deleteAdminStatus);
+                String updateManagesStatus = updateManagesFunction(admAT, branch);
+                JOptionPane.showMessageDialog(null, updateManagesStatus);
             }
         });
 

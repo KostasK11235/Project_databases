@@ -55,8 +55,8 @@ public class UpdateLanguages extends JFrame{
                 String[] languagePart = secondPart.split(":");
                 String speaks = languagePart[1];
 
-                String deleteAdminStatus = updateLanguagesFunction(guideAT, speaks, language);
-                JOptionPane.showMessageDialog(null, deleteAdminStatus);
+                String updateLanguagesStatus = updateLanguagesFunction(guideAT, speaks, language);
+                JOptionPane.showMessageDialog(null, updateLanguagesStatus);
             }
         });
 

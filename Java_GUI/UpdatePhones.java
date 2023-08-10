@@ -55,8 +55,8 @@ public class UpdatePhones extends JFrame{
                 String[] phonePart = secondPart.split(":");
                 String oldPhone = phonePart[1];
 
-                String deleteAdminStatus = updatePhonesFunction(brCode, oldPhone, newPhone);
-                JOptionPane.showMessageDialog(null, deleteAdminStatus);
+                String updatePhonesStatus = updatePhonesFunction(brCode, oldPhone, newPhone);
+                JOptionPane.showMessageDialog(null, updatePhonesStatus);
             }
         });
 

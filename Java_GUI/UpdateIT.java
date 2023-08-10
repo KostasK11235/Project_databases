@@ -166,7 +166,7 @@ public class UpdateIT extends JFrame{
                 statement.setString(2, startDate);
                 statement.setString(3, at);
             }
-            else 
+            else
             {
                 sql = "UPDATE it SET password=?,start_date=?,end_date=? WHERE IT_AT=?";
                 statement = connection.prepareStatement(sql);
@@ -282,7 +282,6 @@ public class UpdateIT extends JFrame{
 
         // Check if any of the selected items are empty strings
         if (yearString.equalsIgnoreCase(" ") || monthString.equalsIgnoreCase(" ") || dayString.equalsIgnoreCase(" ")) {
-            // Handle the case where any field is not selected
             return "NULL";
         }
 
