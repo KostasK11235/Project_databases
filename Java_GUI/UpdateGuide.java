@@ -52,8 +52,8 @@ public class UpdateGuide extends JFrame{
                 String[] parts = selectedAT.split(",");
                 String guideAT = parts[0];
 
-                String deleteAdminStatus = updateGuideFunction(guideAT, cv);
-                JOptionPane.showMessageDialog(null, deleteAdminStatus);
+                String updateGuideStatus = updateGuideFunction(guideAT, cv);
+                JOptionPane.showMessageDialog(null, updateGuideStatus);
             }
         });
 
