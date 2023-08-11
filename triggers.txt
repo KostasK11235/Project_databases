@@ -1,4 +1,5 @@
 3.1.4.1
+/* Μετά από κάθε trigger θα καλούμε μια procedure η οποία θα αλλάζει το it_at της τελευταίας καταγραφής του πίνακα it_logs στο it_AT που χρησιμοποιεί αυτή τη στιγμή το GUI */
 DELIMITER $
 
 CREATE TRIGGER trip_insert_log
@@ -131,22 +132,24 @@ CREATE TRIGGER prevent_trip_update
 BEFORE UPDATE ON trip
 FOR EACH ROW
 BEGIN
-	DECLARE res_count INT;
-	DECLARE trip_id INT(11);
+    DECLARE res_count INT;
 
-	SELECT tr_id INTO trip_id 
-	FROM trip 
-	WHERE tr_departure=OLD.tr_departure;
+    IF NEW.tr_departure <> OLD.tr_departure OR
+       NEW.tr_return <> OLD.tr_return OR
+       NEW.tr_cost <> OLD.tr_cost THEN
 
-	SELECT count(*) INTO res_count
-	FROM reservation
-	WHERE res_tr_id=trip_id;
+        SELECT COUNT(*) INTO res_count
+        FROM reservation
+        WHERE res_tr_id = OLD.tr_id;
 
-	IF res_count>0 THEN
-		SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT='Can not update trip. Reservations already exists.';
-	END IF;
+        IF res_count > 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Can not update trip. Reservations already exist.';
+        END IF;
+
+    END IF;
 END $
+
 
 3.1.4.2
 DELIMITER $

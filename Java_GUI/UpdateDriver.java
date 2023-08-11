@@ -16,7 +16,7 @@ public class UpdateDriver extends JFrame{
     public UpdateDriver()
     {
         setTitle("Update table: Driver");
-        setSize(400, 320);
+        setSize(400, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -80,7 +80,7 @@ public class UpdateDriver extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Delete options:
-                        1. Choose a drivers AT to update that reservations drivers data on the table.
+                        1. Choose a drivers AT to update that drivers data on the table.
                         2. Experience needs to be in months.
                         """;
                 JOptionPane.showMessageDialog(null, helpMessage);
@@ -99,39 +99,17 @@ public class UpdateDriver extends JFrame{
         try
         {
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
-
-            String sql = "SELECT d.dst_name,d.dst_location FROM trip AS t JOIN travel_to AS tt ON t.tr_id=tt.to_tr_id" +
-                    " JOIN destination AS d ON tt.to_dst_id=d.dst_id WHERE t.tr_drv_AT=?";
+            String sql = "UPDATE driver SET drv_license=?,drv_route=?,drv_experience=? WHERE drv_AT=?";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, drvAT);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            // get a list of the dst_name and dst_location for each trip with that driver and compare if it is local or not
-            // to do that say if dst_name OR dst_location != LONDON and newDriverRoute == LOCAL, deny the update
-            while(resultSet.next())
-            {
-                String currCode = resultSet.getString("offer_code");
-                offerCodes.add(currCode);
-            }
-
-            resultSet.close();
-            statement.close();
-            connection.close();
-
-            String sql = "UPDATE reservation_offers SET cust_name=?,cust_lname=?,trip_offer_code=?,advance_fee=?" +
-                    " WHERE res_offer_code=?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, name);
-            statement.setString(2, lName);
-            statement.setString(3, tripOffer);
-            statement.setString(4, advance);
-            statement.setString(5, resCode);
+            statement.setString(1, license);
+            statement.setString(2, route);
+            statement.setString(3, experience);
+            statement.setString(4, drvAT);
 
             int rowsAffected = statement.executeUpdate();
 
             if(rowsAffected > 0)
-                UpdateStatus = "Reservation offer record updated successfully!";
+                UpdateStatus = "Driver record updated successfully!";
 
             statement.close();
             connection.close();
@@ -143,7 +121,7 @@ public class UpdateDriver extends JFrame{
 
         return UpdateStatus;
     }
-    private String[] getReservationCodes()
+    private String[] getDriverCodes()
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -153,16 +131,17 @@ public class UpdateDriver extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT res_offer_code,cust_name,cust_lname FROM reservation_offers";
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname FROM worker AS w INNER JOIN driver AS d" +
+                    " ON d.drv_AT=w.wrk_AT";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("res_offer_code");
-                String name = resultSet.getString("cust_name");
-                String lName =resultSet.getString("cust_lname");
+                String currCode = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lName =resultSet.getString("w.wrk_lname");
                 String info = currCode + ", Name-LastName: " + name + "-" + lName;
                 dstIDs.add(info);
             }
@@ -175,43 +154,5 @@ public class UpdateDriver extends JFrame{
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
         return dstIDs.toArray(new String[dstIDs.size()]);
-    }
-
-    private String[] getTripOfferCodes()
-    {
-        String url = "jdbc:mariadb://localhost:3306/project";
-        String dbUsername = "root";
-        String dbPassword = "";
-
-        List<String> offerCodes = new ArrayList<>();
-
-        try {
-            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT offer_code FROM offers";
-            PreparedStatement statement = connection.prepareStatement(sql);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            while(resultSet.next())
-            {
-                String currCode = resultSet.getString("offer_code");
-                offerCodes.add(currCode);
-            }
-
-            resultSet.close();
-            statement.close();
-            connection.close();
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
-        }
-        return offerCodes.toArray(new String[offerCodes.size()]);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new UpdateReservationOffers().setVisible(true); }
-        });
     }
 }
