@@ -12,7 +12,6 @@ public class UpdateReservation extends JFrame{
     private JComboBox<String> dropDownList3;
     private JButton updateButton;
     private JButton helpButton;
-    private JButton confirmButton;
 
     public UpdateReservation(String loggedAdmin)
     {
