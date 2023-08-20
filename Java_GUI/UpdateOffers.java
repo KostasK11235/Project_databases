@@ -24,7 +24,7 @@ public class UpdateOffers extends JFrame{
 
     public UpdateOffers()
     {
-        setTitle("Update table: offers");
+        setTitle("Update table: Offers");
         setSize(400, 320);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

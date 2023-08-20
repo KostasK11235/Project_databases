@@ -107,7 +107,7 @@ public class UpdateReservation extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
+                        Update options:
                         1. Choose a reservation id to update that reservations data on the table.
                         2. Choose a new seat or leave the field empty to retain the existing reserved seat.
                         """;

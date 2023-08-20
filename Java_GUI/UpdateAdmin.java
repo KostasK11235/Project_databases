@@ -16,7 +16,7 @@ public class UpdateAdmin extends JFrame{
 
     public UpdateAdmin()
     {
-        setTitle("Update table: admin");
+        setTitle("Update table: Admin");
         setSize(400, 210);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -72,10 +72,10 @@ public class UpdateAdmin extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
+                        Update options:
                         1. Choose an admin AT to update that admins data on the table.
                         
-                        (Note!: You can not alter the type of an admin manager!""";
+                        Note!: You can not alter the type of an admin manager!""";
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
         });

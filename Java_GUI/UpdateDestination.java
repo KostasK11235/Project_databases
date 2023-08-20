@@ -96,7 +96,7 @@ public class UpdateDestination extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
+                        Update options:
                         1. Choose a destination id to update that destinations data on the table.
                         2. Choose a location if the new destination belongs to an existing destination. If not, leave empty.
                         """;
@@ -119,7 +119,7 @@ public class UpdateDestination extends JFrame{
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
 
             String sql = " ";
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement;
 
             if(location.equalsIgnoreCase(" "))
             {

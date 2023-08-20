@@ -87,7 +87,7 @@ public class UpdateReservationOffers extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
+                        Update options:
                         1. Choose a reservation offer code to update that reservations data on the table.
                         """;
                 JOptionPane.showMessageDialog(null, helpMessage);
@@ -143,7 +143,7 @@ public class UpdateReservationOffers extends JFrame{
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> dstIDs = new ArrayList<>();
+        List<String> reservations = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
@@ -158,7 +158,7 @@ public class UpdateReservationOffers extends JFrame{
                 String name = resultSet.getString("cust_name");
                 String lName =resultSet.getString("cust_lname");
                 String info = currCode + ", Name-LastName: " + name + "-" + lName;
-                dstIDs.add(info);
+                reservations.add(info);
             }
 
             resultSet.close();
@@ -168,7 +168,7 @@ public class UpdateReservationOffers extends JFrame{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        return dstIDs.toArray(new String[dstIDs.size()]);
+        return reservations.toArray(new String[reservations.size()]);
     }
 
     private String[] getTripOfferCodes()

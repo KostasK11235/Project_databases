@@ -4,7 +4,6 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class UpdateBranch extends JFrame{
     private JTextField field1;
@@ -16,7 +15,7 @@ public class UpdateBranch extends JFrame{
 
     public UpdateBranch()
     {
-        setTitle("Update table: branch");
+        setTitle("Update table: Branch");
         setSize(400, 210);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -67,7 +66,7 @@ public class UpdateBranch extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
+                        Update options:
                         1. Choose a branch code to update its data on the table.
                         """;
                 JOptionPane.showMessageDialog(null, helpMessage);

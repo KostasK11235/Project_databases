@@ -94,7 +94,7 @@ public class UpdateEvent extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
+                        Update options:
                         1. Choose an event trip id to update that travel_to trips data on the table.
                         
                         NOTES:
@@ -133,8 +133,6 @@ public class UpdateEvent extends JFrame{
 
             if(evEndDate.isAfter(evStartDate))
             {
-                System.out.println("First cond: " + (evStartDate.isAfter(tripDepDate) && evStartDate.isBefore(tripRetDate)));
-                System.out.println("Second cond: " + (evEndDate.isAfter(tripDepDate) && evEndDate.isBefore(tripRetDate)));
                 if(!(evStartDate.isAfter(tripDepDate) && evStartDate.isBefore(tripRetDate)) ||
                 !(evEndDate.isAfter(tripDepDate) && evEndDate.isBefore(tripRetDate)))
                 {
@@ -294,13 +292,6 @@ public class UpdateEvent extends JFrame{
         String dateTimeAsString = String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
 
         return dateTimeAsString;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new UpdateEvent("AT051").setVisible(true); }
-        });
     }
 }
 

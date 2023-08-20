@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -86,7 +85,7 @@ public class UpdateIT extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
+                        Update options:
                         1. Choose an IT AT to update that ITs data on the table.
                         """;
                 JOptionPane.showMessageDialog(null, helpMessage);
@@ -198,7 +197,7 @@ public class UpdateIT extends JFrame{
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> admins = new ArrayList<>();
+        List<String> ITs = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
@@ -215,7 +214,7 @@ public class UpdateIT extends JFrame{
                 String lname = resultSet.getString("w.wrk_lname");
                 String guiBr = resultSet.getString("w.wrk_br_code");
                 String info = currCode + ", Name-Lastname: " + name + "-" + lname + "at Branch: " + guiBr;
-                admins.add(info);
+                ITs.add(info);
             }
 
             resultSet.close();
@@ -225,7 +224,7 @@ public class UpdateIT extends JFrame{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        return admins.toArray(new String[admins.size()]);
+        return ITs.toArray(new String[ITs.size()]);
     }
 
     private void createDatePickerComponents() {

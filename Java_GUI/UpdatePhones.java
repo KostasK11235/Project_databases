@@ -14,7 +14,7 @@ public class UpdatePhones extends JFrame{
 
     public UpdatePhones()
     {
-        setTitle("Update table: phones");
+        setTitle("Update table: Phones");
         setSize(400, 170);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -65,7 +65,7 @@ public class UpdatePhones extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Delete options:
-                        1. Choose a branch code to update that branches data on the table.
+                        1. Choose a branch code to update that branches phone data on the table.
                         """;
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
@@ -111,7 +111,7 @@ public class UpdatePhones extends JFrame{
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> admins = new ArrayList<>();
+        List<String> branch = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
@@ -125,7 +125,7 @@ public class UpdatePhones extends JFrame{
                 String currAT = resultSet.getString("ph_br_code");
                 String language = resultSet.getString("ph_number");
                 String info = currAT + ", Phone:" + language;
-                admins.add(info);
+                branch.add(info);
             }
 
             resultSet.close();
@@ -135,6 +135,6 @@ public class UpdatePhones extends JFrame{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        return admins.toArray(new String[admins.size()]);
+        return branch.toArray(new String[branch.size()]);
     }
 }

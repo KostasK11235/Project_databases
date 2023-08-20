@@ -14,7 +14,7 @@ public class UpdateLanguages extends JFrame{
 
     public UpdateLanguages()
     {
-        setTitle("Update table: languages");
+        setTitle("Update table: Languages");
         setSize(400, 170);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -64,8 +64,8 @@ public class UpdateLanguages extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
-                        1. Choose a guide AT to update that guides data on the table.
+                        Update options:
+                        1. Choose a guide AT to update that guides language data on the table.
                         """;
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
@@ -111,7 +111,7 @@ public class UpdateLanguages extends JFrame{
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> admins = new ArrayList<>();
+        List<String> guides = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
@@ -125,7 +125,7 @@ public class UpdateLanguages extends JFrame{
                 String currAT = resultSet.getString("lng_gui_AT");
                 String language = resultSet.getString("lng_language");
                 String info = currAT + ", Speaks:" + language;
-                admins.add(info);
+                guides.add(info);
             }
 
             resultSet.close();
@@ -135,6 +135,6 @@ public class UpdateLanguages extends JFrame{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        return admins.toArray(new String[admins.size()]);
+        return guides.toArray(new String[guides.size()]);
     }
 }

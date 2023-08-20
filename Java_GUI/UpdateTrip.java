@@ -8,9 +8,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class UpdateTravelTo extends JFrame{
+public class UpdateTrip extends JFrame{
+    private JTextField field1;
+    private JTextField field2;
     private JComboBox<String> dropDownList1;
     private JComboBox<String> dropDownList2;
+    private JComboBox<String> dropDownList3;
+    private JComboBox<String> dropDownList4;
     private JComboBox<Integer> yearComboBox1;
     private JComboBox<String> monthComboBox1;
     private JComboBox<Integer> dayComboBox1;
@@ -26,10 +30,10 @@ public class UpdateTravelTo extends JFrame{
     private JButton updateButton;
     private JButton helpButton;
 
-    public UpdateTravelTo(String loggedAdmin)
+    public UpdateTrip(String loggedAdmin)
     {
-        setTitle("Update table: Travel to");
-        setSize(550, 350);
+        setTitle("Update table: Trip");
+        setSize(550, 450);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -38,7 +42,9 @@ public class UpdateTravelTo extends JFrame{
         add(panel);
 
         String[] tripID = getTripIDs();
-        String[] dstID = getDestinationIDs();
+        String[] brCodes = getBranchCodes();
+        String[] guideIDs = getGuideIDs();
+        String[] drvIDs = getDriverIDs();
 
         JLabel trID = new JLabel("Trip ID:");
         panel.add(trID);
@@ -46,26 +52,50 @@ public class UpdateTravelTo extends JFrame{
         dropDownList1 = new JComboBox<>(tripID);
         panel.add(dropDownList1);
 
-        JLabel dst = new JLabel("Destination ID:");
-        panel.add(dst);
-
-        dropDownList2 = new JComboBox<>(dstID);
-        panel.add(dropDownList2);
-
         // Create date fields with drop-down lists
         createDatePickerComponents();
 
-        JLabel arr = new JLabel("Arrival Date(Year/Month/Day/Hour/Minute/Second):");
-        panel.add(arr);
+        JLabel dep = new JLabel("Departure (Year/Month/Day/Hour/Minute/Second):");
+        panel.add(dep);
 
-        JPanel arrDate = createDatePickerPanel1();
-        panel.add(arrDate);
+        JPanel trDep = createDatePickerPanel1();
+        panel.add(trDep);
 
-        JLabel ret = new JLabel("Departure Date(Year/Month/Day/Hour/Minute/Second):");
+        JLabel ret = new JLabel("Return (Year/Month/Day/Hour/Minute/Second):");
         panel.add(ret);
 
-        JPanel retDate = createDatePickerPanel2();
-        panel.add(retDate);
+        JPanel trRet = createDatePickerPanel2();
+        panel.add(trRet);
+
+        JLabel seats = new JLabel("No. Seats:");
+        panel.add(seats);
+
+        field1 = new JTextField(15);
+        panel.add(field1);
+
+        JLabel cost = new JLabel("Cost:");
+        panel.add(cost);
+
+        field2 = new JTextField(15);
+        panel.add(field2);
+
+        JLabel brCode = new JLabel("Branch code:");
+        panel.add(brCode);
+
+        dropDownList2 = new JComboBox<>(brCodes);
+        panel.add(dropDownList2);
+
+        JLabel guide = new JLabel("Guide:");
+        panel.add(guide);
+
+        dropDownList3 = new JComboBox<>(guideIDs);
+        panel.add(dropDownList3);
+
+        JLabel driver = new JLabel("Driver:");
+        panel.add(driver);
+
+        dropDownList4 = new JComboBox<>(drvIDs);
+        panel.add(dropDownList4);
 
         helpButton = new JButton("Help");
         panel.add(helpButton);
@@ -76,22 +106,24 @@ public class UpdateTravelTo extends JFrame{
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedTripID = (String) dropDownList1.getSelectedItem();
-                String selectedDstID = (String) dropDownList2.getSelectedItem();
-                String arrDate = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1, hourComboBox1, minuteComboBox1, secondComboBox1);
-                String retDate = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2, hourComboBox2, minuteComboBox2, secondComboBox2);
+                String selectedTrID = (String) dropDownList1.getSelectedItem();
+                String departure = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1, hourComboBox1, minuteComboBox1, secondComboBox1);
+                String returnDate = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2, hourComboBox2, minuteComboBox2, secondComboBox2);
+                String seat = field1.getText();
+                String cost = field2.getText();
+                String branch = (String) dropDownList2.getSelectedItem();
+                String selectedGuide = (String) dropDownList3.getSelectedItem();
+                String selectedDriver = (String) dropDownList4.getSelectedItem();
 
-                String[] parts = selectedDstID.split(",");
-                String dstID = parts[0];
-                parts = selectedTripID.split(",");
+                String[] parts = selectedTrID.split(",");
                 String tripID = parts[0];
-                String[] dstParts = parts[1].split(":");
-                String[] dstParts2 = dstParts[1].split(",");
-                String oldDstID = dstParts2[0];
+                String[] guideParts = selectedGuide.split(",");
+                String guide = guideParts[0];
+                String[] driverParts = selectedDriver.split(",");
+                String driver = driverParts[0];
 
-
-                String updateTravelToStatus = updateTravelToFunction(tripID, dstID, arrDate, retDate, oldDstID, loggedAdmin);
-                JOptionPane.showMessageDialog(null, updateTravelToStatus);
+                String updateTripStatus = updateTripFunction(tripID, departure, returnDate, seat, cost, branch, guide, driver, loggedAdmin);
+                JOptionPane.showMessageDialog(null, updateTripStatus);
             }
         });
 
@@ -100,14 +132,18 @@ public class UpdateTravelTo extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Update options:
-                        1. Choose a trip id to update that travel_to trips data on the table.
+                        1. Choose an event trip id to update that trips data on the table.
+                        
+                        NOTES:
+                        Different trips cannot have the same departure and return dates!
                         """;
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
         });
     }
 
-    private String updateTravelToFunction(String tripID, String dstID, String arrDate, String retDate, String oldDstID, String loggedAdmin)
+    private String updateTripFunction(String tripID, String departure, String returnDate, String seat, String cost,
+                                      String branch, String guide, String driver, String loggedAdmin)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -118,61 +154,38 @@ public class UpdateTravelTo extends JFrame{
         try
         {
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
-            String sql = "SELECT tr_departure,tr_return FROM trip WHERE tr_id=?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, tripID);
-
-            ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
-            String tripDep = resultSet.getString("tr_departure");
-            String tripRet = resultSet.getString("tr_return");
-
-            System.out.println("trip departure: " + tripDep + ", Trip return: " + tripRet + "\ntravel arrival: "
-            + arrDate + ", travel departure: "+ retDate);
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime tripDepDate = LocalDateTime.parse(tripDep, formatter);
-            LocalDateTime tripRetDate = LocalDateTime.parse(tripRet, formatter);
-            LocalDateTime travelArrDate = LocalDateTime.parse(arrDate, formatter);
-            LocalDateTime travelDepDate = LocalDateTime.parse(retDate, formatter);
+            LocalDateTime tripDepDate = LocalDateTime.parse(departure, formatter);
+            LocalDateTime tripRetDate = LocalDateTime.parse(returnDate, formatter);
 
-            System.out.println("First cond: " + (travelArrDate.isAfter(tripDepDate) && travelArrDate.isBefore(tripRetDate)));
-            System.out.println("Second cond: " + !(travelDepDate.isAfter(travelArrDate) && travelDepDate.isBefore(tripRetDate)));
-
-            if(travelArrDate.isAfter(tripDepDate) && travelArrDate.isBefore(tripRetDate))
+            if(tripRetDate.isBefore(tripDepDate))
             {
-                if(!(travelDepDate.isAfter(travelArrDate) && travelDepDate.isBefore(tripRetDate)))
-                {
-                    UpdateStatus = "Arrival date must be between tr_departure and tr_return dates and\n" +
-                            "Departure date must be between between arrival and tr_return dates";
-                    return UpdateStatus;
-                }
-            }
-            else
-            {
-                UpdateStatus = "Arrival date must be between tr_departure and tr_return dates and\n" +
-                        "Departure date must be between between arrival and tr_return dates";
+                UpdateStatus = "Trip Departure Date must be chronologically before Return Date!";
                 return UpdateStatus;
             }
 
-            sql = "UPDATE travel_to SET to_dst_id=?,to_arrival=?,to_departure=? WHERE to_tr_id=? AND to_dst_id=?";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, dstID);
-            statement.setString(2, arrDate);
-            statement.setString(3, retDate);
-            statement.setString(4, tripID);
-            statement.setString(5, oldDstID);
+            String sql = "UPDATE trip SET tr_departure=?,tr_return=?,tr_maxseats=?,tr_cost=?,tr_br_code=?,tr_gui_AT=?" +
+                    ",tr_drv_AT=? WHERE tr_id=?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, departure);
+            statement.setString(2, returnDate);
+            statement.setString(3, seat);
+            statement.setString(4, cost);
+            statement.setString(5, branch);
+            statement.setString(6, guide);
+            statement.setString(7, driver);
+            statement.setString(8, tripID);
 
             int rowsAffected = statement.executeUpdate();
 
             if(rowsAffected > 0)
             {
-                UpdateStatus = "Travel to record updated successfully!";
+                UpdateStatus = "Trip record updated successfully!";
 
                 sql = "UPDATE it_logs SET IT_id=? WHERE log_id=(SELECT MAX(log_id) FROM it_logs WHERE table_name=? AND action=?)";
                 statement = connection.prepareStatement(sql);
                 statement.setString(1, loggedAdmin);
-                statement.setString(2, "travel_to");
+                statement.setString(2, "trip");
                 statement.setString(3, "UPDATE");
 
                 statement.executeUpdate();
@@ -197,18 +210,17 @@ public class UpdateTravelTo extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT to_tr_id,to_dst_id,to_arrival,to_departure FROM travel_to";
+            String sql = "SELECT tr_id,tr_departure,tr_return FROM trip ORDER BY tr_id";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("to_tr_id");
-                String dst = resultSet.getString("to_dst_id");
-                String arr = resultSet.getString("to_arrival");
-                String dep = resultSet.getString("to_departure");
-                String info = currCode + ", Destination ID: " + dst + ", Arrival:" + arr + ", Departure:" + dep;
+                String currCode = resultSet.getString("tr_id");
+                String depDate = resultSet.getString("tr_departure");
+                String retDate = resultSet.getString("tr_return");
+                String info = currCode + ", Departure-Return: " + depDate + "-" + retDate;
                 tripIDs.add(info);
             }
 
@@ -222,27 +234,25 @@ public class UpdateTravelTo extends JFrame{
         return tripIDs.toArray(new String[tripIDs.size()]);
     }
 
-    private String[] getDestinationIDs()
+    private String[] getBranchCodes()
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> dstIDs = new ArrayList<>();
+        List<String> brCodes = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT dst_id,dst_name FROM destination";
+            String sql = "SELECT br_code FROM branch";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String dstID = resultSet.getString("dst_id");
-                String name = resultSet.getString("dst_name");
-                String info = dstID + ", Name: " + name;
-                dstIDs.add(info);
+                String currCode = resultSet.getString("br_code");
+                brCodes.add(currCode);
             }
 
             resultSet.close();
@@ -252,9 +262,76 @@ public class UpdateTravelTo extends JFrame{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        return dstIDs.toArray(new String[dstIDs.size()]);
+        return brCodes.toArray(new String[brCodes.size()]);
     }
 
+    private String[] getGuideIDs()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> guideIDs = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname FROM worker w INNER JOIN guide g ON w.wrk_AT=g.gui_AT";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String info = currCode + ", Name-LastName: " + name + "-" + lname;
+                guideIDs.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return guideIDs.toArray(new String[guideIDs.size()]);
+    }
+
+    private String[] getDriverIDs()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> drvIDs = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname FROM worker w INNER JOIN driver d ON w.wrk_AT=d.drv_AT";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String info = currCode + ", Name-LastName: " + name + "-" + lname;
+                drvIDs.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return drvIDs.toArray(new String[drvIDs.size()]);
+    }
     private void createDatePickerComponents() {
         // Get current year
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -338,4 +415,12 @@ public class UpdateTravelTo extends JFrame{
 
         return dateTimeAsString;
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() { new UpdateTrip("AT051").setVisible(true); }
+        });
+    }
 }
+

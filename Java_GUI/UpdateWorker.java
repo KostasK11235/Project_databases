@@ -5,17 +5,19 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateManages extends JFrame{
-    private JComboBox<String> dropdownList1;
-    private JComboBox<String> dropdownList2;
+public class UpdateWorker extends JFrame{
+    private JTextField field1;
+    private JTextField field2;
+    private JTextField field3;
+    private JComboBox<String> dropDownList1;
+    private JComboBox<String> dropDownList2;
     private JButton updateButton;
     private JButton helpButton;
 
-
-    public UpdateManages()
+    public UpdateWorker()
     {
-        setTitle("Update table: Manages");
-        setSize(400, 210);
+        setTitle("Update table: Worker");
+        setSize(450, 300);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -23,20 +25,38 @@ public class UpdateManages extends JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        String[] adminsAT = getAdminsAT();
+        String[] wrkATs = getWorkerATs();
         String[] brCodes = getBranchCodes();
 
-        JLabel admAT = new JLabel("Admin AT:");
-        panel.add(admAT);
+        JLabel wrkAT = new JLabel("Worker AT:");
+        panel.add(wrkAT);
 
-        dropdownList1 = new JComboBox<>(adminsAT);
-        panel.add(dropdownList1);
+        dropDownList1 = new JComboBox<>(wrkATs);
+        panel.add(dropDownList1);
 
-        JLabel admType = new JLabel("Branch Codes:");
-        panel.add(admType);
+        JLabel name = new JLabel("Name:");
+        panel.add(name);
 
-        dropdownList2 = new JComboBox<>(brCodes);
-        panel.add(dropdownList2);
+        field1 = new JTextField(15);
+        panel.add(field1);
+
+        JLabel lname = new JLabel("Last Name:");
+        panel.add(lname);
+
+        field2 = new JTextField(15);
+        panel.add(field2);
+
+        JLabel salary = new JLabel("Salary:");
+        panel.add(salary);
+
+        field3 = new JTextField(15);
+        panel.add(field3);
+
+        JLabel brCode = new JLabel("Branch:");
+        panel.add(brCode);
+
+        dropDownList2 = new JComboBox<>(brCodes);
+        panel.add(dropDownList2);
 
         helpButton = new JButton("Help");
         panel.add(helpButton);
@@ -47,14 +67,17 @@ public class UpdateManages extends JFrame{
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedAT = (String) dropdownList1.getSelectedItem();
-                String branch = (String) dropdownList2.getSelectedItem();
+                String selectedAT = (String) dropDownList1.getSelectedItem();
+                String name = field1.getText();
+                String lname = field2.getText();
+                String salary = field3.getText();
+                String branch = (String) dropDownList2.getSelectedItem();
 
                 String[] parts = selectedAT.split(",");
-                String admAT = parts[0];
+                String wrkAT = parts[0];
 
-                String updateManagesStatus = updateManagesFunction(admAT, branch);
-                JOptionPane.showMessageDialog(null, updateManagesStatus);
+                String updateWorkerStatus = updateWorkerFunction(wrkAT, name, lname, salary, branch);
+                JOptionPane.showMessageDialog(null, updateWorkerStatus);
             }
         });
 
@@ -63,14 +86,14 @@ public class UpdateManages extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
                         Update options:
-                        1. Choose an admin AT to update that admins data on the table.
+                        1. Choose a worker AT to update that workers data on the table.
                         """;
                 JOptionPane.showMessageDialog(null, helpMessage);
             }
         });
     }
 
-    private String updateManagesFunction(String at, String brCode)
+    private String updateWorkerFunction(String wrkAT, String name, String lname, String salary, String branch)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -81,15 +104,20 @@ public class UpdateManages extends JFrame{
         try
         {
             Connection connection = DriverManager.getConnection(url, dbUsername,dbPassword);
-            String sql = "UPDATE manages SET mng_br_code=? WHERE mng_adm_AT=?";
+            String sql = "UPDATE worker SET wrk_name=?,wrk_lname=?,wrk_salary=?,wrk_br_code=? WHERE wrk_AT=?";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, brCode);
-            statement.setString(2, at);
+            statement.setString(1, name);
+            statement.setString(2, lname);
+            statement.setString(3, salary);
+            statement.setString(4, branch);
+            statement.setString(5, wrkAT);
 
             int rowsAffected = statement.executeUpdate();
 
             if(rowsAffected > 0)
-                UpdateStatus = "Manages record updated successfully!";
+            {
+                UpdateStatus = "Worker record updated successfully!";
+            }
 
             statement.close();
             connection.close();
@@ -98,34 +126,31 @@ public class UpdateManages extends JFrame{
         {
             UpdateStatus = ex.getMessage();
         }
-
         return UpdateStatus;
     }
-
-    private String[] getAdminsAT()
+    private String[] getWorkerATs()
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> admins = new ArrayList<>();
+        List<String> wrkATs = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname,m.mng_br_code FROM worker AS w INNER JOIN manages AS m" +
-                    " ON w.wrk_AT=m.mng_adm_AT";
+            String sql = "SELECT wrk_AT,wrk_name,wrk_lname,wrk_br_code FROM worker";
             PreparedStatement statement = connection.prepareStatement(sql);
 
             ResultSet resultSet = statement.executeQuery();
 
             while(resultSet.next())
             {
-                String currCode = resultSet.getString("w.wrk_AT");
-                String name = resultSet.getString("w.wrk_name");
-                String lname = resultSet.getString("w.wrk_lname");
-                String mngBr = resultSet.getString("m.mng_br_code");
-                String info = currCode + ", Name-Lastname: " + name + "-" + lname + "at Branch: " + mngBr;
-                admins.add(info);
+                String currCode = resultSet.getString("wrk_AT");
+                String name = resultSet.getString("wrk_name");
+                String lname = resultSet.getString("wrk_lname");
+                String branch = resultSet.getString("wrk_br_code");
+                String info = currCode + ", Name-LastName: " + name + "-" + lname + ", Branch: " + branch;
+                wrkATs.add(info);
             }
 
             resultSet.close();
@@ -135,7 +160,7 @@ public class UpdateManages extends JFrame{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        return admins.toArray(new String[admins.size()]);
+        return wrkATs.toArray(new String[wrkATs.size()]);
     }
 
     private String[] getBranchCodes()
@@ -144,7 +169,7 @@ public class UpdateManages extends JFrame{
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> branchCodes = new ArrayList<>();
+        List<String> brCodes = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
@@ -156,7 +181,7 @@ public class UpdateManages extends JFrame{
             while(resultSet.next())
             {
                 String currCode = resultSet.getString("br_code");
-                branchCodes.add(currCode);
+                brCodes.add(currCode);
             }
 
             resultSet.close();
@@ -166,7 +191,7 @@ public class UpdateManages extends JFrame{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        return branchCodes.toArray(new String[branchCodes.size()]);
+        return brCodes.toArray(new String[brCodes.size()]);
     }
 }
 

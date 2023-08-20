@@ -79,7 +79,7 @@ public class UpdateDriver extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
+                        Update options:
                         1. Choose a drivers AT to update that drivers data on the table.
                         2. Experience needs to be in months.
                         """;
@@ -127,7 +127,7 @@ public class UpdateDriver extends JFrame{
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> dstIDs = new ArrayList<>();
+        List<String> drvIDs = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
@@ -143,7 +143,7 @@ public class UpdateDriver extends JFrame{
                 String name = resultSet.getString("w.wrk_name");
                 String lName =resultSet.getString("w.wrk_lname");
                 String info = currCode + ", Name-LastName: " + name + "-" + lName;
-                dstIDs.add(info);
+                drvIDs.add(info);
             }
 
             resultSet.close();
@@ -153,6 +153,6 @@ public class UpdateDriver extends JFrame{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        return dstIDs.toArray(new String[dstIDs.size()]);
+        return drvIDs.toArray(new String[drvIDs.size()]);
     }
 }

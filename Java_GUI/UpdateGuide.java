@@ -14,7 +14,7 @@ public class UpdateGuide extends JFrame{
 
     public UpdateGuide()
     {
-        setTitle("Update table: guide");
+        setTitle("Update table: Guide");
         setSize(400, 210);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -61,7 +61,7 @@ public class UpdateGuide extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String helpMessage = """
-                        Delete options:
+                        Update options:
                         1. Choose a guide AT to update that guides data on the table.
                         """;
                 JOptionPane.showMessageDialog(null, helpMessage);
@@ -107,7 +107,7 @@ public class UpdateGuide extends JFrame{
         String dbUsername = "root";
         String dbPassword = "";
 
-        List<String> admins = new ArrayList<>();
+        List<String> guides = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
@@ -124,7 +124,7 @@ public class UpdateGuide extends JFrame{
                 String lname = resultSet.getString("w.wrk_lname");
                 String guiBr = resultSet.getString("w.wrk_br_code");
                 String info = currCode + ", Name-Lastname: " + name + "-" + lname + "at Branch: " + guiBr;
-                admins.add(info);
+                guides.add(info);
             }
 
             resultSet.close();
@@ -134,6 +134,6 @@ public class UpdateGuide extends JFrame{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-        return admins.toArray(new String[admins.size()]);
+        return guides.toArray(new String[guides.size()]);
     }
 }
