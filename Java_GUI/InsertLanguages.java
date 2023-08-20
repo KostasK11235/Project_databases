@@ -2,14 +2,16 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InsertLanguages extends JFrame {
     private JTextField field1;
-    private JTextField field2;
+    private JComboBox<String> dropdownList1;
     private JButton insertButton;
 
     public InsertLanguages() {
-        setTitle("Insert data for table: languages");
+        setTitle("Insert data for table: Languages");
         setSize(350, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -18,17 +20,19 @@ public class InsertLanguages extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        JLabel lngGuiAT = new JLabel("lng_gui_AT:");
+        String[] guidesAT = getGuidesAT();
+
+        JLabel lngGuiAT = new JLabel("Guide AT:");
         panel.add(lngGuiAT);
+
+        dropdownList1 = new JComboBox<>(guidesAT);
+        panel.add(dropdownList1);
+
+        JLabel lngs = new JLabel("Language");
+        panel.add(lngs);
 
         field1 = new JTextField(15);
         panel.add(field1);
-
-        JLabel lngs = new JLabel("lng_language");
-        panel.add(lngs);
-
-        field2 = new JTextField(15);
-        panel.add(field2);
 
         insertButton = new JButton("Insert");
         panel.add(insertButton);
@@ -36,10 +40,13 @@ public class InsertLanguages extends JFrame {
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String lngGuiAT = field1.getText();
-                String languages = field2.getText();
+                String selectedAT = (String) dropdownList1.getSelectedItem();
+                String language = field1.getText();
 
-                String insertLanguagesStatus = insertLanguagesFunction(lngGuiAT, languages);
+                String[] parts = selectedAT.split(",");
+                String guiAT = parts[0];
+
+                String insertLanguagesStatus = insertLanguagesFunction(guiAT, language);
                 JOptionPane.showMessageDialog(null, insertLanguagesStatus);
             }
         });
@@ -55,27 +62,8 @@ public class InsertLanguages extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT gui_AT FROM guide WHERE gui_AT=?";
+            String sql = "INSERT INTO languages VALUES (?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, at);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            try
-            {
-                if(!resultSet.first())
-                {
-                    insertStatus = "In order to add a new language lng_gui_AT must match an existing gui_AT!";
-                    return insertStatus;
-                }
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-
-            sql = "INSERT INTO languages VALUES (?,?)";
-            statement = connection.prepareStatement(sql);
             statement.setString(1, at);
             statement.setString(2, languages);
 
@@ -88,8 +76,42 @@ public class InsertLanguages extends JFrame {
             connection.close();
 
         } catch (SQLException ex) {
-            // ex.printStackTrace();
+            insertStatus = "Record with the same guide AT and language already exists!";
         }
         return insertStatus;
+    }
+
+    private String[] getGuidesAT()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> workers = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname FROM worker w INNER JOIN guide g ON w.wrk_AT=g.gui_AT";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String info = currCode + ", Name-Lastname: " + name + "-" + lname;
+                workers.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return workers.toArray(new String[workers.size()]);
     }
 }

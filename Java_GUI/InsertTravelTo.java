@@ -133,10 +133,11 @@ public class InsertTravelTo extends JFrame{
             if(rowsAffected>0) {
                 insertStatus = "New travel information inserted into travel_to table!";
 
-                sql = "UPDATE it_logs SET IT_id=? WHERE log_id=(SELECT MAX(log_id) FROM it_logs WHERE table_name=?)";
+                sql = "UPDATE it_logs SET IT_id=? WHERE log_id=(SELECT MAX(log_id) FROM it_logs WHERE table_name=? AND action=?)";
                 statement = connection.prepareStatement(sql);
                 statement.setString(1, loggedAdmin);
                 statement.setString(2, "travel_to");
+                statement.setString(3, "INSERT");
 
                 statement.executeUpdate();
             }

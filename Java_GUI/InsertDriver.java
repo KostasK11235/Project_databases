@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InsertDriver extends JFrame{
     private JTextField field1;
@@ -14,7 +16,7 @@ public class InsertDriver extends JFrame{
     private JButton insertButton;
 
     public InsertDriver() {
-        setTitle("Insert data for table: driver");
+        setTitle("Insert data for table: Driver");
         setSize(350, 330);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -26,43 +28,43 @@ public class InsertDriver extends JFrame{
         String[] licenseTypes = {"A", "B", "C", "D"};
         String[] routes = {"LOCAL", "ABROAD"};
 
-        JLabel drvAT = new JLabel("drv_AT:");
+        JLabel drvAT = new JLabel("Driver AT:");
         panel.add(drvAT);
 
         field1 = new JTextField(15);
         panel.add(field1);
 
-        JLabel drvLicense = new JLabel("drv_license:");
+        JLabel drvLicense = new JLabel("License:");
         panel.add(drvLicense);
 
         dropdownList1 = new JComboBox<>(licenseTypes);
         panel.add(dropdownList1);
 
-        JLabel drvRoute = new JLabel("drv_route:");
+        JLabel drvRoute = new JLabel("Route:");
         panel.add(drvRoute);
 
         dropdownList2 = new JComboBox<>(routes);
         panel.add(dropdownList2);
 
-        JLabel drvExperience = new JLabel("drv_experience:");
+        JLabel drvExperience = new JLabel("Experience:");
         panel.add(drvExperience);
 
         field2 = new JTextField(15);
         panel.add(field2);
 
-        JLabel drvName = new JLabel("driver_name:");
+        JLabel drvName = new JLabel("Name:");
         panel.add(drvName);
 
         field3 = new JTextField(15);
         panel.add(field3);
 
-        JLabel drvLastName = new JLabel("driver_lastName:");
+        JLabel drvLastName = new JLabel("Last Name:");
         panel.add(drvLastName);
 
         field4 = new JTextField(15);
         panel.add(field4);
 
-        JLabel drvSalary = new JLabel("driver_salary:");
+        JLabel drvSalary = new JLabel("Salary:");
         panel.add(drvSalary);
 
         field5 = new JTextField(15);
@@ -111,15 +113,11 @@ public class InsertDriver extends JFrame{
             callableStatement.setString(7, experience);
 
             boolean hasResultSet = callableStatement.execute();
-            System.out.println("hasresultset"+hasResultSet);
             if (!hasResultSet) {
                 int rowsAffected = callableStatement.getUpdateCount();
-                System.out.println("rowsaffected"+rowsAffected);
                 if (rowsAffected > 1) {
-                    // Rows were affected, meaning the insert was successful
                     insertStatus = "New driver inserted into driver and worker table!";
                 } else if(rowsAffected == 1){
-                    // No rows affected, indicating some problem with the insert
                     insertStatus = "Driver with the same drv_AT already exists!";
                 }
             }

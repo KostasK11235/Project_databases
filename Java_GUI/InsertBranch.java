@@ -7,11 +7,10 @@ public class InsertBranch extends JFrame {
     private JTextField field1;
     private JTextField field2;
     private JTextField field3;
-    private JTextField field4;
     private JButton insertButton;
 
     public InsertBranch() {
-        setTitle("Insert data for table: branch");
+        setTitle("Insert data for table: Branch");
         setSize(350, 220);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -20,29 +19,23 @@ public class InsertBranch extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        JLabel brCode = new JLabel("br_code:");
-        panel.add(brCode);
+        JLabel brStreet = new JLabel("Branch Street:");
+        panel.add(brStreet);
 
         field1 = new JTextField(15);
         panel.add(field1);
 
-        JLabel brStreet = new JLabel("br_street:");
-        panel.add(brStreet);
+        JLabel brNum = new JLabel("Branch Number:");
+        panel.add(brNum);
 
         field2 = new JTextField(15);
         panel.add(field2);
 
-        JLabel brNum = new JLabel("br_num:");
-        panel.add(brNum);
+        JLabel brCity = new JLabel("Branch City:");
+        panel.add(brCity);
 
         field3 = new JTextField(15);
         panel.add(field3);
-
-        JLabel brCity = new JLabel("br_city:");
-        panel.add(brCity);
-
-        field4 = new JTextField(15);
-        panel.add(field4);
 
         insertButton = new JButton("Insert");
         panel.add(insertButton);
@@ -50,18 +43,17 @@ public class InsertBranch extends JFrame {
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String brCode = field1.getText();
-                String brStreet = field2.getText();
-                String brNum = field3.getText();
-                String brCity = field4.getText();
+                String brStreet = field1.getText();
+                String brNum = field2.getText();
+                String brCity = field3.getText();
 
-                String insertBranchStatus = insertBranchFunction(brCode, brStreet, brNum, brCity);
+                String insertBranchStatus = insertBranchFunction(brStreet, brNum, brCity);
                 JOptionPane.showMessageDialog(null, insertBranchStatus);
             }
         });
 
     }
-    private String insertBranchFunction(String code, String street, String number, String city)
+    private String insertBranchFunction(String street, String number, String city)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -71,12 +63,11 @@ public class InsertBranch extends JFrame {
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "INSERT INTO branch VALUES (?,?,?,?)";
+            String sql = "INSERT INTO branch(br_street,br_num,br_city) VALUES (?,?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, code);
-            statement.setString(2, street);
-            statement.setString(3, number);
-            statement.setString(4, city);
+            statement.setString(1, street);
+            statement.setString(2, number);
+            statement.setString(3, city);
 
             int rowsAffected = statement.executeUpdate();
 
@@ -88,7 +79,7 @@ public class InsertBranch extends JFrame {
 
         } catch (SQLException ex) {
             // ex.printStackTrace();
-            insertStatus = "Branch with the same br_code already exists!";
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
     }

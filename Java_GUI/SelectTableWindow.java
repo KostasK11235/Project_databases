@@ -158,6 +158,130 @@ public class SelectTableWindow extends JFrame {
                             break;
                     }
                 }
+                else if("update".equalsIgnoreCase(action))
+                {
+                    switch (selectedTable.toLowerCase())
+                    {
+                        case "admin":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateAdmin().setVisible(true);
+                                }
+                            });
+                            break;
+                        case "branch":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateBranch().setVisible(true);
+                                }
+                            });
+                            break;
+                        case "destination":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateDestination(userID).setVisible(true);
+                                }
+                            });
+                            break;
+                        case "driver":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateDriver().setVisible(true);
+                                }
+                            });
+                            break;
+                        case "event":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateEvent(userID).setVisible(true);
+                                }
+                            });
+                            break;
+                        case "guide":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateGuide().setVisible(true);
+                                }
+                            });
+                            break;
+                        case "languages":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateLanguages().setVisible(true);
+                                }
+                            });
+                            break;
+                        case "manages":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateManages().setVisible(true);
+                                }
+                            });
+                            break;
+                        case "offers":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateOffers().setVisible(true);
+                                }
+                            });
+                            break;
+                        case "phones":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdatePhones().setVisible(true);
+                                }
+                            });
+                            break;
+                        case "reservation":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateReservation(userID).setVisible(true);
+                                }
+                            });
+                            break;
+                        case "reservation_offers":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateReservationOffers().setVisible(true);
+                                }
+                            });
+                            break;
+                        case "travel_to":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateTravelTo(userID).setVisible(true);
+                                }
+                            });
+                            break;
+                        case "trip":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() { new UpdateTrip(userID).setVisible(true); }
+                            });
+                            break;
+                        case "worker":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateWorker().setVisible(true);
+                                }
+                            });
+                            break;
+                    }
+                }
                 else
                 {
                     switch (selectedTable.toLowerCase())

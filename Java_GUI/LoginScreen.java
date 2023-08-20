@@ -6,12 +6,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Date;
 
 public class LoginScreen extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton loginButton;
+    private JButton helpButton;
     private JRadioButton showPasswordRadioButton;
 
     public LoginScreen() {
@@ -35,6 +35,9 @@ public class LoginScreen extends JFrame {
         passwordField = new JPasswordField(15);
         panel.add(passwordField);
 
+        helpButton = new JButton("Help");
+        panel.add(helpButton);
+
         loginButton = new JButton("Login");
         panel.add(loginButton);
 
@@ -55,6 +58,15 @@ public class LoginScreen extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid username or password");
                 }
+            }
+        });
+
+        helpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String helpMessage = """
+                        The username field must be filled with the ITs last name and the password field with his password.""";
+                JOptionPane.showMessageDialog(null, helpMessage);
             }
         });
 
@@ -83,7 +95,7 @@ public class LoginScreen extends JFrame {
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
             String sql = "SELECT w.wrk_name, w.wrk_AT FROM worker AS w INNER JOIN it ON w.wrk_AT=it.IT_AT " +
-                    "WHERE it.password=? AND w.wrk_name=?";
+                    "WHERE it.password=? AND w.wrk_lname=?";
 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, password);
@@ -107,14 +119,5 @@ public class LoginScreen extends JFrame {
             ex.printStackTrace();
             return loggedUser;
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new LoginScreen().setVisible(true);
-            }
-        });
     }
 }

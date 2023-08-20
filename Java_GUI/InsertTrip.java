@@ -173,10 +173,11 @@ public class InsertTrip extends JFrame{
             if(rowsAffected>0) {
                 insertStatus = "New trip inserted into trip table!";
 
-                sql = "UPDATE it_logs SET IT_id=? WHERE log_id=(SELECT MAX(log_id) FROM it_logs WHERE table_name=?)";
+                sql = "UPDATE it_logs SET IT_id=? WHERE log_id=(SELECT MAX(log_id) FROM it_logs WHERE table_name=? AND action=?)";
                 statement = connection.prepareStatement(sql);
                 statement.setString(1, adminsID);
                 statement.setString(2, "trip");
+                statement.setString(3, "INSERT");
 
                 statement.executeUpdate();
             }

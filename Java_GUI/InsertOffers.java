@@ -2,12 +2,13 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class InsertOffers extends JFrame{
     private JTextField field1;
-    private JTextField field2;
-    private JTextField field3;
+    private JComboBox<String> dropdownList1;
     private JComboBox<Integer> yearComboBox1;
     private JComboBox<String> monthComboBox1;
     private JComboBox<Integer> dayComboBox1;
@@ -17,8 +18,8 @@ public class InsertOffers extends JFrame{
     private JButton insertButton;
 
     public InsertOffers() {
-        setTitle("Insert data for table: offers");
-        setSize(330, 300);
+        setTitle("Insert data for table: Offers");
+        setSize(330, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -26,13 +27,9 @@ public class InsertOffers extends JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        JLabel offerCode = new JLabel("offer_code:");
-        panel.add(offerCode);
+        String[] destinations = getDestinations();
 
-        field1 = new JTextField(15);
-        panel.add(field1);
-
-        JLabel fromDate = new JLabel("from_date:");
+        JLabel fromDate = new JLabel("From Date:");
         panel.add(fromDate);
 
         // Create date fields with drop-down lists
@@ -42,24 +39,24 @@ public class InsertOffers extends JFrame{
         JPanel offersDate1 = createDatePickerPanel1();
         panel.add(offersDate1);
 
-        JLabel toDate = new JLabel("to_date:");
+        JLabel toDate = new JLabel("To Date:");
         panel.add(toDate);
 
         // Add date fields to the panel
         JPanel offersDate2 = createDatePickerPanel2();
         panel.add(offersDate2);
 
-        JLabel cost = new JLabel("cost_per_person");
+        JLabel cost = new JLabel("Cost per Person");
         panel.add(cost);
 
-        field2 = new JTextField(15);
-        panel.add(field2);
+        field1 = new JTextField(15);
+        panel.add(field1);
 
-        JLabel destinationID = new JLabel("destination_id:");
+        JLabel destinationID = new JLabel("Destination ID:");
         panel.add(destinationID);
 
-        field3 = new JTextField(15);
-        panel.add(field3);
+        dropdownList1 = new JComboBox<>(destinations);
+        panel.add(dropdownList1);
 
         insertButton = new JButton("Insert");
         panel.add(insertButton);
@@ -67,19 +64,21 @@ public class InsertOffers extends JFrame{
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String offerCode = field1.getText();
                 String startDate = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1);
                 String endDate = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2);
-                String cost = field2.getText();
-                String destinationID = field3.getText();
+                String cost = field1.getText();
+                String destinationID = (String) dropdownList1.getSelectedItem();
 
-                String insertOffersStatus = insertOffersFunction(offerCode, startDate, endDate, cost, destinationID);
+                String[] parts = destinationID.split(",");
+                destinationID = parts[0];
+
+                String insertOffersStatus = insertOffersFunction(startDate, endDate, cost, destinationID);
                 JOptionPane.showMessageDialog(null, insertOffersStatus);
             }
         });
     }
 
-    private String insertOffersFunction(String code, String start, String end, String cost, String destinationId)
+    private String insertOffersFunction(String start, String end, String cost, String destinationId)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -89,32 +88,12 @@ public class InsertOffers extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT dst_id FROM destination WHERE dst_id=?";
+            String sql = "INSERT INTO offers(from_date,to_date,cost_per_person,destination_id) VALUES (?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, destinationId);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            try
-            {
-                if(!resultSet.first())
-                {
-                    insertStatus = "In order to add new offer, trip_offer_code must match an existing dst_id!";
-                    return insertStatus;
-                }
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-
-            sql = "INSERT INTO offers VALUES (?,?,?,?,?)";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, code);
-            statement.setString(2, start);
-            statement.setString(3, end);
-            statement.setString(4, cost);
-            statement.setString(5, destinationId);
+            statement.setString(1, start);
+            statement.setString(2, end);
+            statement.setString(3, cost);
+            statement.setString(4, destinationId);
 
             int rowsAffected = statement.executeUpdate();
 
@@ -125,8 +104,7 @@ public class InsertOffers extends JFrame{
             connection.close();
 
         } catch (SQLException ex) {
-            //ex.printStackTrace();
-            insertStatus = "Offer with the same offer_code already exists!";
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
     }
@@ -183,5 +161,38 @@ public class InsertOffers extends JFrame{
         String dateAsString = String.format("%04d-%02d-%02d", year, month, day);
 
         return dateAsString;
+    }
+
+    private String[] getDestinations()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> branches = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT dst_id,dst_name FROM destination";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("dst_id");
+                String name = resultSet.getString("dst_name");
+                String info = currCode + ", Name:" + name;
+                branches.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return branches.toArray(new String[branches.size()]);
     }
 }

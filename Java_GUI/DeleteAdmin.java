@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeleteAdmin extends JFrame{
-    private JComboBox<String> dropdownList2;
+    private JComboBox<String> dropdownList1;
     private JButton deleteButton;
     private JButton helpButton;
 
@@ -27,8 +27,8 @@ public class DeleteAdmin extends JFrame{
         JLabel admAT = new JLabel("Admin AT:");
         panel.add(admAT);
 
-        dropdownList2 = new JComboBox<>(adminsAT);
-        panel.add(dropdownList2);
+        dropdownList1 = new JComboBox<>(adminsAT);
+        panel.add(dropdownList1);
 
         helpButton = new JButton("Help");
         panel.add(helpButton);
@@ -39,7 +39,7 @@ public class DeleteAdmin extends JFrame{
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selected = (String) dropdownList2.getSelectedItem();
+                String selected = (String) dropdownList1.getSelectedItem();
                 String admAT;
 
                 if(!selected.equals(""))
