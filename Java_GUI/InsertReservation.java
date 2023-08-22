@@ -9,7 +9,6 @@ public class InsertReservation extends JFrame{
     private JTextField field1;
     private JTextField field2;
     private JComboBox<String> dropdownList1;
-    private JComboBox<String> dropdownList2;
     private JComboBox<String> dropdownList3;
 
     private JButton insertButton;
@@ -232,12 +231,5 @@ public class InsertReservation extends JFrame{
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
         return branches.toArray(new String[branches.size()]);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new InsertReservation("AT051").setVisible(true);}
-        });
     }
 }

@@ -2,22 +2,32 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class InsertTravelTo extends JFrame{
-    private JTextField field1;
-    private JTextField field2;
+    private JComboBox<String> dropdownList1;
+    private JComboBox<String> dropdownList2;
     private JComboBox<Integer> yearComboBox1;
     private JComboBox<String> monthComboBox1;
     private JComboBox<Integer> dayComboBox1;
+    private JComboBox<Integer> hourComboBox1;
+    private JComboBox<Integer> minuteComboBox1;
+    private JComboBox<Integer> secondComboBox1;
     private JComboBox<Integer> yearComboBox2;
     private JComboBox<String> monthComboBox2;
     private JComboBox<Integer> dayComboBox2;
+    private JComboBox<Integer> hourComboBox2;
+    private JComboBox<Integer> minuteComboBox2;
+    private JComboBox<Integer> secondComboBox2;
     private JButton insertButton;
 
     public InsertTravelTo(String loggedAdmin) {
-        setTitle("Insert data for table: travel_to");
-        setSize(350, 250);
+        setTitle("Insert data for table: Travel to");
+        setSize(450, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -25,29 +35,32 @@ public class InsertTravelTo extends JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        JLabel toTrId = new JLabel("to_tr_id:");
+        String[] tripIDs = getTripIDs();
+        String[] dstIDs = getDstIDs();
+
+        JLabel toTrId = new JLabel("Trip ID:");
         panel.add(toTrId);
 
-        field1 = new JTextField(15);
-        panel.add(field1);
+        dropdownList1 = new JComboBox<>(tripIDs);
+        panel.add(dropdownList1);
 
-        JLabel toDstId = new JLabel("to_dst_id");
+        JLabel toDstId = new JLabel("Destination ID");
         panel.add(toDstId);
 
-        field2 = new JTextField(15);
-        panel.add(field2);
+        dropdownList2 = new JComboBox<>(dstIDs);
+        panel.add(dropdownList2);
 
         // Create date fields with drop-down lists
         createDatePickerComponents();
 
-        JLabel toArrival = new JLabel("to_arrival:");
+        JLabel toArrival = new JLabel("Arrival:");
         panel.add(toArrival);
 
         // Add date fields to the panel
         JPanel arrivalDate = createDatePickerPanel1();
         panel.add(arrivalDate);
 
-        JLabel toDeparture = new JLabel("to_departure:");
+        JLabel toDeparture = new JLabel("Departure:");
         panel.add(toDeparture);
 
         // Add date fields to the panel
@@ -60,10 +73,16 @@ public class InsertTravelTo extends JFrame{
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String trID = field1.getText();
-                String dstID = field2.getText();
-                String arrival = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1);
-                String returnDate = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2);
+                String selectedTrip = (String) dropdownList1.getSelectedItem();
+                String selectedDst = (String) dropdownList2.getSelectedItem();
+                String arrival = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1, hourComboBox1, minuteComboBox1, secondComboBox1);
+                String returnDate = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2, hourComboBox2, minuteComboBox2, secondComboBox2);
+
+                String[] parts = selectedDst.split(",");
+                String dstID = parts[0];
+
+                parts = selectedTrip.split(",");
+                String trID = parts[0];
 
 
                 String insertTravelToStatus = insertTravelToFunction(trID, dstID, arrival, returnDate, loggedAdmin);
@@ -83,42 +102,30 @@ public class InsertTravelTo extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT * FROM trip WHERE tr_id=?";
+
+            String sql = "SELECT tr_departure,tr_return FROM trip WHERE tr_id=?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, trID);
 
             ResultSet resultSet = statement.executeQuery();
 
-            try
-            {
-                if(!resultSet.first())
-                {
-                    insertStatus = "Trip with the same tr_id as to_tr_id must already exists!";
-                    return insertStatus;
-                }
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
+            resultSet.next();
 
-            sql = "SELECT * FROM destination WHERE dst_id=?";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, dstID);
+            String tripDeparture = resultSet.getString("tr_departure");
+            String tripReturn = resultSet.getString("tr_return");
 
-            resultSet = statement.executeQuery();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime tripDepDate = LocalDateTime.parse(tripDeparture, formatter);
+            LocalDateTime tripRetDate = LocalDateTime.parse(tripReturn, formatter);
+            LocalDateTime travelArrival = LocalDateTime.parse(arrivalDate, formatter);
+            LocalDateTime travelReturn = LocalDateTime.parse(returnDate, formatter);
 
-            try
+            if(!(travelArrival.isAfter(tripDepDate) && travelArrival.isBefore(tripRetDate)) ||
+            !(travelReturn.isAfter(travelArrival) && travelReturn.isBefore(tripRetDate)))
             {
-                if(!resultSet.first())
-                {
-                    insertStatus = "Destination with the same dst_id as to_dst_id must already exists!";
-                    return insertStatus;
-                }
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
+                insertStatus = "Arrival Date must be between trips Departure and Return Dates\n" +
+                        "and Departure Date must be between Arrival and trips Return Dates";
+                return insertStatus;
             }
 
             sql = "INSERT INTO travel_to VALUES (?,?,?,?)";
@@ -142,10 +149,76 @@ public class InsertTravelTo extends JFrame{
                 statement.executeUpdate();
             }
         } catch (SQLException ex) {
-            // ex.printStackTrace();
-            insertStatus = "Travel to data with the same to_tr_id and to_dst_id already exists!";
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
+    }
+
+    private String[] getTripIDs()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> tripIDs = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT tr_id,tr_departure,tr_return FROM trip ORDER BY tr_id";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("tr_id");
+                String depDate = resultSet.getString("tr_departure");
+                String retDate = resultSet.getString("tr_return");
+                String info = currCode + ", Departure-Return: " + depDate + "-" + retDate;
+                tripIDs.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return tripIDs.toArray(new String[tripIDs.size()]);
+    }
+
+    private String[] getDstIDs()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> dstIDs = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT dst_id,dst_name FROM destination ORDER BY dst_id";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("dst_id");
+                String name = resultSet.getString("dst_name");
+                String info = currCode + ", Destination: " + name;
+                dstIDs.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return dstIDs.toArray(new String[dstIDs.size()]);
     }
 
     private void createDatePickerComponents() {
@@ -173,6 +246,26 @@ public class InsertTravelTo extends JFrame{
             dayComboBox1.addItem(day);
             dayComboBox2.addItem(day);
         }
+
+        // Create hour combo boxes
+        hourComboBox1 = new JComboBox<>();
+        hourComboBox2 = new JComboBox<>();
+        for (int hour = 0; hour < 24; hour++) {
+            hourComboBox1.addItem(hour);
+            hourComboBox2.addItem(hour);
+        }
+
+        // Create minute and second combo boxes
+        minuteComboBox1 = new JComboBox<>();
+        minuteComboBox2 = new JComboBox<>();
+        secondComboBox1 = new JComboBox<>();
+        secondComboBox2 = new JComboBox<>();
+        for (int minute = 0; minute < 60; minute++) {
+            minuteComboBox1.addItem(minute);
+            minuteComboBox2.addItem(minute);
+            secondComboBox1.addItem(minute);
+            secondComboBox2.addItem(minute);
+        }
     }
 
     private JPanel createDatePickerPanel1() {
@@ -180,6 +273,9 @@ public class InsertTravelTo extends JFrame{
         panel.add(yearComboBox1);
         panel.add(monthComboBox1);
         panel.add(dayComboBox1);
+        panel.add(hourComboBox1);
+        panel.add(minuteComboBox1);
+        panel.add(secondComboBox1);
         return panel;
     }
 
@@ -188,17 +284,24 @@ public class InsertTravelTo extends JFrame{
         panel.add(yearComboBox2);
         panel.add(monthComboBox2);
         panel.add(dayComboBox2);
+        panel.add(hourComboBox2);
+        panel.add(minuteComboBox2);
+        panel.add(secondComboBox2);
         return panel;
     }
 
-    private String getDateAsString(JComboBox<Integer> yearComboBox, JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox) {
+    private String getDateAsString(JComboBox<Integer> yearComboBox, JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox,
+                                   JComboBox<Integer> hourComboBox, JComboBox<Integer> minuteComboBox, JComboBox<Integer> secondComboBox) {
         int year = (int) yearComboBox.getSelectedItem();
         int month = monthComboBox.getSelectedIndex() + 1; // Add 1 to adjust for zero-based index
         int day = (int) dayComboBox.getSelectedItem();
+        int hour = (int) hourComboBox.getSelectedItem();
+        int minute = (int) minuteComboBox.getSelectedItem();
+        int second = (int) secondComboBox.getSelectedItem();
 
-        // Format the date as a string in the desired format
-        String dateAsString = String.format("%04d-%02d-%02d", year, month, day);
+        // Format the date and time as a string in the desired format
+        String dateTimeAsString = String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
 
-        return dateAsString;
+        return dateTimeAsString;
     }
 }

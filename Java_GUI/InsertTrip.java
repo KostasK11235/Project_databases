@@ -2,26 +2,35 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class InsertTrip extends JFrame{
     private JTextField field1;
-    private JTextField field2;
-    private JTextField field3;
-    private JTextField field4;
-    private JTextField field5;
-    private JTextField field6;
+    private JComboBox<String> dropdownList1;
+    private JComboBox<String> dropdownList2;
+    private JComboBox<String> dropdownList3;
+    private JComboBox<String> dropdownList4;
     private JComboBox<Integer> yearComboBox1;
     private JComboBox<String> monthComboBox1;
     private JComboBox<Integer> dayComboBox1;
+    private JComboBox<Integer> hourComboBox1;
+    private JComboBox<Integer> minuteComboBox1;
+    private JComboBox<Integer> secondComboBox1;
     private JComboBox<Integer> yearComboBox2;
     private JComboBox<String> monthComboBox2;
     private JComboBox<Integer> dayComboBox2;
+    private JComboBox<Integer> hourComboBox2;
+    private JComboBox<Integer> minuteComboBox2;
+    private JComboBox<Integer> secondComboBox2;
     private JButton insertButton;
 
     public InsertTrip(String loggedAdmin) {
-        setTitle("Insert data for table: trip");
-        setSize(350, 385);
+        setTitle("Insert data for table: Trip");
+        setSize(350, 405);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -29,58 +38,61 @@ public class InsertTrip extends JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        JLabel trId = new JLabel("tr_id:");
-        panel.add(trId);
-
-        field1 = new JTextField(15);
-        panel.add(field1);
+        String[] branchIDs = getBranchIDs();
+        String[] guides = getGuides();
+        String[] drivers = getDrivers();
+        String[] seats = new String[50];
+        for (int i = 0; i < 50; i++)
+        {
+            seats[i] = String.valueOf(i + 1);
+        }
 
         // Create date fields with drop-down lists
         createDatePickerComponents();
 
-        JLabel trDeparture = new JLabel("tr_departure:");
+        JLabel trDeparture = new JLabel("Departure:");
         panel.add(trDeparture);
 
         // Add date fields to the panel
         JPanel departureTr = createDatePickerPanel1();
         panel.add(departureTr);
 
-        JLabel trReturn = new JLabel("tr_return:");
+        JLabel trReturn = new JLabel("Return:");
         panel.add(trReturn);
 
         // Add date fields to the panel
         JPanel returnTr = createDatePickerPanel2();
         panel.add(returnTr);
 
-        JLabel trMaxseats = new JLabel("tr_maxseats:");
+        JLabel trMaxseats = new JLabel("Max Seats:");
         panel.add(trMaxseats);
 
-        field2 = new JTextField(15);
-        panel.add(field2);
+        dropdownList1 = new JComboBox<>(seats);
+        panel.add(dropdownList1);
 
-        JLabel trCost = new JLabel("tr_cost:");
+        JLabel trCost = new JLabel("Cost:");
         panel.add(trCost);
 
-        field3 = new JTextField(15);
-        panel.add(field3);
+        field1 = new JTextField(15);
+        panel.add(field1);
 
-        JLabel trBrCode = new JLabel("tr_br_code:");
+        JLabel trBrCode = new JLabel("Branch Code:");
         panel.add(trBrCode);
 
-        field4 = new JTextField(15);
-        panel.add(field4);
+        dropdownList2 = new JComboBox<>(branchIDs);
+        panel.add(dropdownList2);
 
-        JLabel trGuiAt = new JLabel("tr_gui_AT:");
+        JLabel trGuiAt = new JLabel("Guide:");
         panel.add(trGuiAt);
 
-        field5 = new JTextField(15);
-        panel.add(field5);
+        dropdownList3 = new JComboBox<>(guides);
+        panel.add(dropdownList3);
 
-        JLabel trDrvAt = new JLabel("tr_drv_AT:");
+        JLabel trDrvAt = new JLabel("Driver:");
         panel.add(trDrvAt);
 
-        field6 = new JTextField(15);
-        panel.add(field6);
+        dropdownList4 = new JComboBox<>(drivers);
+        panel.add(dropdownList4);
 
         insertButton = new JButton("Insert");
         panel.add(insertButton);
@@ -88,23 +100,27 @@ public class InsertTrip extends JFrame{
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String trID = field1.getText();
-                String trDeparture = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1);
-                String trReturn = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2);
-                String maxSeats = field2.getText();
-                String cost = field3.getText();
-                String trBrCode = field4.getText();
-                String trGuiAT = field5.getText();
-                String trDrvAT = field6.getText();
+                String departure = getDateAsString(yearComboBox1, monthComboBox1, dayComboBox1, hourComboBox1, minuteComboBox1, secondComboBox1);
+                String returnDate = getDateAsString(yearComboBox2, monthComboBox2, dayComboBox2, hourComboBox2, minuteComboBox2, secondComboBox2);
+                String maxSeats = (String) dropdownList1.getSelectedItem();
+                String cost = field1.getText();
+                String trBrCode = (String) dropdownList2.getSelectedItem();
+                String selectedGuide = (String) dropdownList3.getSelectedItem();
+                String selectedDriver = (String) dropdownList4.getSelectedItem();
 
-                String insertTripStatus = insertTripFunction(trID, trDeparture, trReturn, maxSeats,
+                String[] parts = selectedGuide.split(",");
+                String trGuiAT = parts[0];
+                parts = selectedDriver.split(",");
+                String trDrvAT = parts[0];
+
+                String insertTripStatus = insertTripFunction(departure, returnDate, maxSeats,
                         cost, trBrCode, trGuiAT, trDrvAT, loggedAdmin);
                 JOptionPane.showMessageDialog(null, insertTripStatus);
             }
         });
     }
 
-    private String insertTripFunction(String id, String trDeparture, String trReturn, String maxSeats, String trCost,
+    private String insertTripFunction(String trDeparture, String trReturn, String maxSeats, String trCost,
                                              String trBrCode, String GuiAT, String DrvAT, String adminsID)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
@@ -115,6 +131,17 @@ public class InsertTrip extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime tripDepDate = LocalDateTime.parse(trDeparture, formatter);
+            LocalDateTime tripRetDate = LocalDateTime.parse(trReturn, formatter);
+
+            if(tripRetDate.isBefore(tripDepDate))
+            {
+                insertStatus = "Trips Return Date must be chronologically after Departure Date!";
+                return insertStatus;
+            }
+
             String sql = "SELECT w.wrk_AT,w.wrk_br_code FROM worker AS w INNER JOIN driver AS d ON\n" +
                     "w.wrk_AT=d.drv_AT WHERE d.drv_AT=? AND w.wrk_br_code=?";
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -127,7 +154,7 @@ public class InsertTrip extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "Driver with the given drv_AT does not exist or work on given tr_br_code";
+                    insertStatus = "The selected driver does not work on the selected branch!";
                     return insertStatus;
                 }
             }
@@ -148,7 +175,7 @@ public class InsertTrip extends JFrame{
             {
                 if(!resultSet.first())
                 {
-                    insertStatus = "Guide with the given gui_AT does not exist or work on given tr_br_code";
+                    insertStatus = "The selected guide does not work on the selected branch!";
                     return insertStatus;
                 }
             }
@@ -157,16 +184,15 @@ public class InsertTrip extends JFrame{
                 ex.printStackTrace();
             }
 
-            sql = "INSERT INTO trip VALUES (?,?,?,?,?,?,?,?)";
+            sql = "INSERT INTO trip(tr_departure,tr_return,tr_maxseats,tr_cost,tr_br_code,tr_gui_AT,tr_drv_AT) VALUES (?,?,?,?,?,?,?)";
             statement = connection.prepareStatement(sql);
-            statement.setString(1, id);
-            statement.setString(2, trDeparture);
-            statement.setString(3, trReturn);
-            statement.setString(4, maxSeats);
-            statement.setString(5, trCost);
-            statement.setString(6, trBrCode);
-            statement.setString(7, GuiAT);
-            statement.setString(8, DrvAT);
+            statement.setString(1, trDeparture);
+            statement.setString(2, trReturn);
+            statement.setString(3, maxSeats);
+            statement.setString(4, trCost);
+            statement.setString(5, trBrCode);
+            statement.setString(6, GuiAT);
+            statement.setString(7, DrvAT);
 
             int rowsAffected = statement.executeUpdate();
 
@@ -182,10 +208,110 @@ public class InsertTrip extends JFrame{
                 statement.executeUpdate();
             }
         } catch (SQLException ex) {
-            // ex.printStackTrace();
-            insertStatus = "Trip with the same tr_id,tr_departure and tr_return already exists!";
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
+    }
+
+    private String[] getBranchIDs()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> brCodes = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT br_code FROM branch";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("br_code");
+                brCodes.add(currCode);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return brCodes.toArray(new String[brCodes.size()]);
+    }
+
+    private String[] getGuides()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> guideIDs = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname,w.wrk_br_code FROM worker w INNER JOIN guide g ON w.wrk_AT=g.gui_AT";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String branch = resultSet.getString("w.wrk_br_code");
+                String info = currCode + ", Name-LastName: " + name + "-" + lname +", Branch: " + branch;
+                guideIDs.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return guideIDs.toArray(new String[guideIDs.size()]);
+    }
+
+    private String[] getDrivers()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> drvIDs = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT w.wrk_AT,w.wrk_name,w.wrk_lname,w.wrk_br_code FROM worker w INNER JOIN driver d ON w.wrk_AT=d.drv_AT";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("w.wrk_AT");
+                String name = resultSet.getString("w.wrk_name");
+                String lname = resultSet.getString("w.wrk_lname");
+                String branch = resultSet.getString("w.wrk_br_code");
+                String info = currCode + ", Name-LastName: " + name + "-" + lname +", Branch: " + branch;
+                drvIDs.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return drvIDs.toArray(new String[drvIDs.size()]);
     }
 
     private void createDatePickerComponents() {
@@ -213,6 +339,26 @@ public class InsertTrip extends JFrame{
             dayComboBox1.addItem(day);
             dayComboBox2.addItem(day);
         }
+
+        // Create hour combo boxes
+        hourComboBox1 = new JComboBox<>();
+        hourComboBox2 = new JComboBox<>();
+        for (int hour = 0; hour < 24; hour++) {
+            hourComboBox1.addItem(hour);
+            hourComboBox2.addItem(hour);
+        }
+
+        // Create minute and second combo boxes
+        minuteComboBox1 = new JComboBox<>();
+        minuteComboBox2 = new JComboBox<>();
+        secondComboBox1 = new JComboBox<>();
+        secondComboBox2 = new JComboBox<>();
+        for (int minute = 0; minute < 60; minute++) {
+            minuteComboBox1.addItem(minute);
+            minuteComboBox2.addItem(minute);
+            secondComboBox1.addItem(minute);
+            secondComboBox2.addItem(minute);
+        }
     }
 
     private JPanel createDatePickerPanel1() {
@@ -220,6 +366,9 @@ public class InsertTrip extends JFrame{
         panel.add(yearComboBox1);
         panel.add(monthComboBox1);
         panel.add(dayComboBox1);
+        panel.add(hourComboBox1);
+        panel.add(minuteComboBox1);
+        panel.add(secondComboBox1);
         return panel;
     }
 
@@ -228,17 +377,24 @@ public class InsertTrip extends JFrame{
         panel.add(yearComboBox2);
         panel.add(monthComboBox2);
         panel.add(dayComboBox2);
+        panel.add(hourComboBox2);
+        panel.add(minuteComboBox2);
+        panel.add(secondComboBox2);
         return panel;
     }
 
-    private String getDateAsString(JComboBox<Integer> yearComboBox, JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox) {
+    private String getDateAsString(JComboBox<Integer> yearComboBox, JComboBox<String> monthComboBox, JComboBox<Integer> dayComboBox,
+                                   JComboBox<Integer> hourComboBox, JComboBox<Integer> minuteComboBox, JComboBox<Integer> secondComboBox) {
         int year = (int) yearComboBox.getSelectedItem();
         int month = monthComboBox.getSelectedIndex() + 1; // Add 1 to adjust for zero-based index
         int day = (int) dayComboBox.getSelectedItem();
+        int hour = (int) hourComboBox.getSelectedItem();
+        int minute = (int) minuteComboBox.getSelectedItem();
+        int second = (int) secondComboBox.getSelectedItem();
 
-        // Format the date as a string in the desired format
-        String dateAsString = String.format("%04d-%02d-%02d", year, month, day);
+        // Format the date and time as a string in the desired format
+        String dateTimeAsString = String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
 
-        return dateAsString;
+        return dateTimeAsString;
     }
 }

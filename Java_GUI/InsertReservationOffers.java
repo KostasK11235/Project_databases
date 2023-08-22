@@ -2,17 +2,18 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InsertReservationOffers extends JFrame{
     private JTextField field1;
     private JTextField field2;
     private JTextField field3;
-    private JTextField field4;
-    private JTextField field5;
+    private JComboBox<String> dropdownList1;
     private JButton insertButton;
 
     public InsertReservationOffers() {
-        setTitle("Insert data for table: reservation_offers");
+        setTitle("Insert data for table: Reservation Offers");
         setSize(350, 250);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -21,35 +22,31 @@ public class InsertReservationOffers extends JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        JLabel resOfferCode = new JLabel("res_offer_code:");
-        panel.add(resOfferCode);
+        String[] offerIDs = getOfferIDs();
+
+        JLabel custName = new JLabel("Customer Name:");
+        panel.add(custName);
 
         field1 = new JTextField(15);
         panel.add(field1);
 
-        JLabel custName = new JLabel("cust_name:");
-        panel.add(custName);
+        JLabel custLName = new JLabel("Customer Last Name:");
+        panel.add(custLName);
 
         field2 = new JTextField(15);
         panel.add(field2);
 
-        JLabel custLName = new JLabel("cust_lname:");
-        panel.add(custLName);
+        JLabel trOfferCode = new JLabel("Trip Offer Code");
+        panel.add(trOfferCode);
+
+        dropdownList1 = new JComboBox<>(offerIDs);
+        panel.add(dropdownList1);
+
+        JLabel advanceFee = new JLabel("Advance Fee");
+        panel.add(advanceFee);
 
         field3 = new JTextField(15);
         panel.add(field3);
-
-        JLabel trOfferCode = new JLabel("trip_offer_code");
-        panel.add(trOfferCode);
-
-        field4 = new JTextField(15);
-        panel.add(field4);
-
-        JLabel advanceFee = new JLabel("advance_fee");
-        panel.add(advanceFee);
-
-        field5 = new JTextField(15);
-        panel.add(field5);
 
         insertButton = new JButton("Insert");
         panel.add(insertButton);
@@ -57,21 +54,21 @@ public class InsertReservationOffers extends JFrame{
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String resOfferCode = field1.getText();
-                String name = field2.getText();
-                String lname = field3.getText();
-                String offerCode = field4.getText();
-                String advanceFee = field5.getText();
+                String name = field1.getText();
+                String lname = field2.getText();
+                String selectedCode = (String) dropdownList1.getSelectedItem();
+                String advanceFee = field3.getText();
 
-                String insertReservationOffersStatus = insertReservationOffersFunction(resOfferCode, name, lname,
-                        offerCode, advanceFee);
+                String[] parts = selectedCode.split(",");
+                String offerCode = parts[0];
+
+                String insertReservationOffersStatus = insertReservationOffersFunction(name, lname, offerCode, advanceFee);
                 JOptionPane.showMessageDialog(null, insertReservationOffersStatus);
             }
         });
     }
 
-    private String insertReservationOffersFunction(String resOfferCode, String name, String lname, String trOfferCode,
-                                                   String advanceFee)
+    private String insertReservationOffersFunction(String name, String lname, String trOfferCode, String advanceFee)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -81,32 +78,12 @@ public class InsertReservationOffers extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT * FROM offers WHERE offer_code=?";
+            String sql = "INSERT INTO reservation_offers(cust_name,cust_lname,trip_offer_code,advance_fee) VALUES(?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, trOfferCode);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            try
-            {
-                if(!resultSet.first())
-                {
-                    insertStatus = "Trip_offer_code must match an existing offer_code in offers table!";
-                    return insertStatus;
-                }
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-
-            sql = "INSERT INTO reservation_offers VALUES (?,?,?,?,?)";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, resOfferCode);
-            statement.setString(2, name);
-            statement.setString(3, lname);
-            statement.setString(4, trOfferCode);
-            statement.setString(5, advanceFee);
+            statement.setString(1, name);
+            statement.setString(2, lname);
+            statement.setString(3, trOfferCode);
+            statement.setString(4, advanceFee);
 
             int rowsAffected = statement.executeUpdate();
 
@@ -117,9 +94,41 @@ public class InsertReservationOffers extends JFrame{
             connection.close();
 
         } catch (SQLException ex) {
-            // ex.printStackTrace();
-            insertStatus = "Reservation with the same res_offer_code already exists in reservation_offers table!";
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
+    }
+
+    private String[] getOfferIDs()
+    {
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        List<String> offers = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT o.offer_code,d.dst_name FROM offers o INNER JOIN destination d ON o.destination_id=d.dst_id";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next())
+            {
+                String currCode = resultSet.getString("o.offer_code");
+                String name = resultSet.getString("d.dst_name");
+                String info = currCode + ", Destination: " + name;
+                offers.add(info);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return offers.toArray(new String[offers.size()]);
     }
 }
