@@ -12,7 +12,7 @@ public class DeleteLanguage extends JFrame {
 
     public DeleteLanguage()
     {
-        setTitle("Delete data from table: languages");
+        setTitle("Delete data from table: Languages");
         setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

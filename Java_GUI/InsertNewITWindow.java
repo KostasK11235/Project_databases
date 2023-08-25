@@ -13,7 +13,6 @@ public class InsertNewITWindow extends JFrame
     private JTextField nameField;
     private JTextField lnameField;
     private JTextField salaryField;
-    // private JTextField branchCodeField;
     private JButton createITButton;
 
 
@@ -69,6 +68,8 @@ public class InsertNewITWindow extends JFrame
         });
     }
 
+    // We insert the new IT into tables worker and IT. The new IT will be registered as a worker in the same branch with
+    // the IT that created him
     private String createIT(String at, String name, String lname, String salary, String loggedAdmin)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
@@ -96,7 +97,7 @@ public class InsertNewITWindow extends JFrame
             }
             catch (SQLException ex)
             {
-                ex.printStackTrace();
+                insertStatus = ex.getMessage();
             }
 
             sql = "SELECT wrk_br_code FROM worker WHERE wrk_AT=?";
@@ -111,7 +112,7 @@ public class InsertNewITWindow extends JFrame
             }
             catch (SQLException ex)
             {
-                ex.printStackTrace();
+                insertStatus = ex.getMessage();
             }
 
             sql = "INSERT INTO worker VALUES (?,?,?,?,?)";
@@ -138,7 +139,7 @@ public class InsertNewITWindow extends JFrame
 
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
     }

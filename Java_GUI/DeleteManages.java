@@ -12,7 +12,7 @@ public class DeleteManages extends JFrame {
 
     public DeleteManages()
     {
-        setTitle("Delete data from table: manages");
+        setTitle("Delete data from table: Manages");
         setSize(420, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

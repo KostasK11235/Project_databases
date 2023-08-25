@@ -12,7 +12,7 @@ public class DeleteGuide extends JFrame {
 
     public DeleteGuide()
     {
-        setTitle("Delete data from table: guide");
+        setTitle("Delete data from table: Guide");
         setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

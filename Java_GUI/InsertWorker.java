@@ -132,11 +132,4 @@ public class InsertWorker extends JFrame{
         }
         return brCodes.toArray(new String[brCodes.size()]);
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new InsertWorker().setVisible(true); }
-        });
-    }
 }

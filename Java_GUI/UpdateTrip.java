@@ -415,12 +415,5 @@ public class UpdateTrip extends JFrame{
 
         return dateTimeAsString;
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() { new UpdateTrip("AT051").setVisible(true); }
-        });
-    }
 }
 

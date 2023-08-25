@@ -149,8 +149,7 @@ public class InsertReservation extends JFrame{
             statement.close();
             connection.close();
         } catch (SQLException ex) {
-            // ex.printStackTrace();
-            insertStatus = "Reservation with the same res_tr_id and res_seatnum already exists!";
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
     }

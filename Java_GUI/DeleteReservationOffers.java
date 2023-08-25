@@ -12,7 +12,7 @@ public class DeleteReservationOffers extends JFrame {
 
     public DeleteReservationOffers()
     {
-        setTitle("Delete data from table: reservation_offers");
+        setTitle("Delete data from table: Reservation Offers");
         setSize(420, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

@@ -23,13 +23,13 @@ public class InsertManages extends JFrame{
         String[] adminAT = getAdmins();
         String[] branches = getBranches();
 
-        JLabel mngAdmAT = new JLabel("mng_adm_AT:");
+        JLabel mngAdmAT = new JLabel("Manager AT:");
         panel.add(mngAdmAT);
 
         dropdownList1 = new JComboBox<>(adminAT);
         panel.add(dropdownList1);
 
-        JLabel mngBrCode = new JLabel("mng_br_code:");
+        JLabel mngBrCode = new JLabel("Branch:");
         panel.add(mngBrCode);
 
         dropdownList2 = new JComboBox<>(branches);

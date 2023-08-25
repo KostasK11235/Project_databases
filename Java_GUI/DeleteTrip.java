@@ -12,7 +12,7 @@ public class DeleteTrip extends JFrame {
 
     public DeleteTrip(String loggedAdmin)
     {
-        setTitle("Delete data from table: trip");
+        setTitle("Delete data from table: Trip");
         setSize(500, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

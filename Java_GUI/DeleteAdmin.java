@@ -13,7 +13,7 @@ public class DeleteAdmin extends JFrame{
 
     public DeleteAdmin()
     {
-        setTitle("Delete data from table: admin");
+        setTitle("Delete data from table: Admin");
         setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

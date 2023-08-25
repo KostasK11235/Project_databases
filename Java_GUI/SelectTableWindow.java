@@ -20,8 +20,14 @@ public class SelectTableWindow extends JFrame {
         String[] tables = {"Admin", "Branch", "Destination", "Driver", "Event", "Guide", "Languages"
                 , "Manages", "Offers", "Phones", "Reservation", "Reservation_Offers", "Travel_to", "Trip", "Worker"};
 
+        String[] updateDeleteTables = {"Admin", "Branch", "Destination", "Driver", "Event", "Guide", "IT", "Languages"
+                , "Manages", "Offers", "Phones", "Reservation", "Reservation_Offers", "Travel_to", "Trip", "Worker"};
         // Create the dropdown list
-        dropdownList = new JComboBox<>(tables);
+        if("delete".equalsIgnoreCase(action ) || "update".equalsIgnoreCase(action))
+            dropdownList = new JComboBox<>(updateDeleteTables);
+        else
+            dropdownList = new JComboBox<>(tables);
+
         panel.add(dropdownList, BorderLayout.CENTER);
 
         confirmButton = new JButton("Confirm");
@@ -31,7 +37,7 @@ public class SelectTableWindow extends JFrame {
         confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: Perform INSERT INTO TABLE action
+                // TODO: Perform INSERT, DELETE, UPDATE TABLE action
                 String selectedTable = (String) dropdownList.getSelectedItem();
 
                 if("insert".equalsIgnoreCase(action))
@@ -210,6 +216,14 @@ public class SelectTableWindow extends JFrame {
                                 }
                             });
                             break;
+                        case "it":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new UpdateIT().setVisible(true);
+                                }
+                            });
+                            break;
                         case "languages":
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
@@ -334,6 +348,14 @@ public class SelectTableWindow extends JFrame {
                                 }
                             });
                             break;
+                        case "it":
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new DeleteIT().setVisible(true);
+                                }
+                            });
+                            break;
                         case "languages":
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
@@ -401,14 +423,6 @@ public class SelectTableWindow extends JFrame {
                                 @Override
                                 public void run() {
                                     new DeleteWorker().setVisible(true);
-                                }
-                            });
-                            break;
-                        case "it":
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    new DeleteIT().setVisible(true);
                                 }
                             });
                             break;

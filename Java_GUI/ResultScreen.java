@@ -7,7 +7,8 @@ public class ResultScreen extends JFrame {
 
     public ResultScreen(List<String> results) {
         setTitle("Results");
-        setSize(400, 300);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setSize((int)screenSize.getWidth(), (int)screenSize.getHeight());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE); // Only close the result screen, not the whole application
         setLocationRelativeTo(null);
 

@@ -12,7 +12,7 @@ public class DeleteDriver extends JFrame {
 
     public DeleteDriver()
     {
-        setTitle("Delete data from table: driver");
+        setTitle("Delete data from table: Driver");
         setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

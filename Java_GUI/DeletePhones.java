@@ -12,7 +12,7 @@ public class DeletePhones extends JFrame {
 
     public DeletePhones()
     {
-        setTitle("Delete data from table: phones");
+        setTitle("Delete data from table: Phones");
         setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

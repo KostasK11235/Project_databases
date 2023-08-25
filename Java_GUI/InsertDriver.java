@@ -126,8 +126,7 @@ public class InsertDriver extends JFrame{
             connection.close();
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            insertStatus = "Error occurred while calling the stored procedure";
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
     }

@@ -18,7 +18,7 @@ public class ChooseDatesWindow extends JFrame {
     private JButton searchButton;
 
     public ChooseDatesWindow() {
-        setTitle("Choose two dates");
+        setTitle("Select two dates");
         setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

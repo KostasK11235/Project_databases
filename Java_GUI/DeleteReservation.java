@@ -12,7 +12,7 @@ public class DeleteReservation extends JFrame {
 
     public DeleteReservation(String loggedAdmin)
     {
-        setTitle("Delete data from table: reservation");
+        setTitle("Delete data from table: Reservation");
         setSize(500, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

@@ -14,8 +14,8 @@ public class InsertCustNameWindow extends JFrame
     private JButton searchButton;
 
     public InsertCustNameWindow() {
-        setTitle("Enter customer last name for search");
-        setSize(300, 150);
+        setTitle("Enter customer last name for search:");
+        setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 

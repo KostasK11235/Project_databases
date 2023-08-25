@@ -12,7 +12,7 @@ public class DeleteBranch extends JFrame {
 
     public DeleteBranch()
     {
-        setTitle("Delete data from table: branch");
+        setTitle("Delete data from table: Branch");
         setSize(350, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

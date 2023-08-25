@@ -12,7 +12,7 @@ public class DeleteOffers extends JFrame {
 
     public DeleteOffers()
     {
-        setTitle("Delete data from table: offers");
+        setTitle("Delete data from table: Offers");
         setSize(350, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

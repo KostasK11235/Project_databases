@@ -12,7 +12,7 @@ public class DeleteDestination extends JFrame {
 
     public DeleteDestination(String loggedAdmin)
     {
-        setTitle("Delete data from table: destination");
+        setTitle("Delete data from table: Destination");
         setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

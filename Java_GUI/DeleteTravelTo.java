@@ -12,7 +12,7 @@ public class DeleteTravelTo extends JFrame {
 
     public DeleteTravelTo(String loggedAdmin)
     {
-        setTitle("Delete data from table: travel_to");
+        setTitle("Delete data from table: Travel to");
         setSize(500, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

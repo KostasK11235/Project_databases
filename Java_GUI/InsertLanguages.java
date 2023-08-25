@@ -76,7 +76,7 @@ public class InsertLanguages extends JFrame {
             connection.close();
 
         } catch (SQLException ex) {
-            insertStatus = "Record with the same guide AT and language already exists!";
+            insertStatus = ex.getMessage();
         }
         return insertStatus;
     }

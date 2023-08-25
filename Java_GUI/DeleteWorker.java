@@ -12,7 +12,7 @@ public class DeleteWorker extends JFrame {
 
     public DeleteWorker()
     {
-        setTitle("Delete data from table: worker");
+        setTitle("Delete data from table: Worker");
         setSize(500, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

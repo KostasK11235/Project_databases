@@ -110,13 +110,12 @@ public class LoginScreen extends JFrame {
                 System.out.println("User id: " + id + "Username: " + loggedName);
 
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                // ex.printStackTrace();
             }
-            System.out.println("login:" + loggedUser);
             return loggedUser; // If a matching IT record is found, login is successful
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            // ex.printStackTrace();
             return loggedUser;
         }
     }

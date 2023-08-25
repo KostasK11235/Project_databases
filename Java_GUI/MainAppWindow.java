@@ -12,7 +12,7 @@ import java.util.List;
 public class MainAppWindow extends JFrame {
     public MainAppWindow(String loggedUser) {
         setTitle("Main Application Window");
-        setSize(400, 300);
+        setSize(600, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -281,7 +281,7 @@ public class MainAppWindow extends JFrame {
 
             try
             {
-                info.add("Column names");
+                info.add("Branch Code\tWorker Name\tWorker Last Name\tWorker Salary\tBranch Salaries Sum");
                 while(resultSet.next())
                 {
                     String currInfo = resultSet.getString("b.br_code")+",\t"+

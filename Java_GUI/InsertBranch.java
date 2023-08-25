@@ -78,7 +78,6 @@ public class InsertBranch extends JFrame {
             connection.close();
 
         } catch (SQLException ex) {
-            // ex.printStackTrace();
             insertStatus = ex.getMessage();
         }
         return insertStatus;

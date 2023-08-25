@@ -12,7 +12,7 @@ public class DeleteEvent extends JFrame {
 
     public DeleteEvent(String loggedAdmin)
     {
-        setTitle("Delete data from table: event");
+        setTitle("Delete data from table: Event");
         setSize(500, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
