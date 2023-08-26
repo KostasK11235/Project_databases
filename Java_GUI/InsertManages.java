@@ -44,14 +44,19 @@ public class InsertManages extends JFrame{
                 String mngAT = (String) dropdownList1.getSelectedItem();
                 String mngBrCode = (String) dropdownList2.getSelectedItem();
 
-                if(!"".equalsIgnoreCase(mngAT))
+                if(!"NULL".equalsIgnoreCase(mngAT))
                 {
                     String[] parts = mngAT.split(",");
                     mngAT = parts[0];
-                }
 
-                String insertManagesStatus = insertManagesFunction(mngAT, mngBrCode);
-                JOptionPane.showMessageDialog(null, insertManagesStatus);
+                    String insertManagesStatus = insertManagesFunction(mngAT, mngBrCode);
+                    JOptionPane.showMessageDialog(null, insertManagesStatus);
+                }
+                else
+                {
+                    String message = "There is no worker in admin table, who does not manage a branch!";
+                    JOptionPane.showMessageDialog(null, message);
+                }
             }
         });
     }
@@ -66,8 +71,19 @@ public class InsertManages extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "INSERT INTO manages VALUES (?,?)";
+            String sql = "SELECT * FROM manages WHERE mng_br_code=?";
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, branchCode);
+
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.first())
+            {
+                insertStatus = "The selected branch has a manager. Please select a branch which does not have a manager!";
+                return insertStatus;
+            }
+
+            sql = "INSERT INTO manages VALUES (?,?)";
+            statement = connection.prepareStatement(sql);
             statement.setString(1, at);
             statement.setString(2, branchCode);
 

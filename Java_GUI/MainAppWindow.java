@@ -265,33 +265,34 @@ public class MainAppWindow extends JFrame {
         try
         {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "SELECT b.br_code,b.br_street,b.br_num,b.br_city,w.wrk_name AS admin_name," +
-                    "w.wrk_lname AS admin_lastname,COUNT(r.res_tr_id) AS total_reservations," +
-                    "COUNT(r.res_tr_id)*t.tr_cost AS total_income " +
-                    "FROM branch AS b " +
-                    "LEFT JOIN worker AS w ON b.br_code = w.wrk_br_code " +
-                    "LEFT JOIN admin AS ad ON w.wrk_AT = ad.adm_AT " +
-                    "LEFT JOIN trip AS t ON b.br_code = t.tr_br_code " +
-                    "LEFT JOIN reservation AS r ON t.tr_id = r.res_tr_id " +
-                    "WHERE ad.adm_type = 'ADMINISTRATIVE' " +
-                    "GROUP BY b.br_code,b.br_street,b.br_num,b.br_city,w.wrk_name,w.wrk_lname;";
+            String sql = "SELECT " +
+                    "b.br_code,b.br_street,b.br_num,b.br_city,w.wrk_name,w.wrk_lname, " +
+                    "SUM(max_seatnum) AS \"Reserved Seats\",SUM(t.tr_cost*max_seatnum) AS \"Total Income\" " +
+                    "FROM branch b " +
+                    "LEFT JOIN manages m ON b.br_code=m.mng_br_code " +
+                    "LEFT JOIN admin a ON m.mng_adm_AT=a.adm_AT " +
+                    "LEFT JOIN worker w ON a.adm_AT=w.wrk_AT " +
+                    "LEFT JOIN trip t ON t.tr_br_code=b.br_code " +
+                    "LEFT JOIN (SELECT r.res_tr_id, MAX(r.res_seatnum) AS max_seatnum FROM reservation r " +
+                    "GROUP BY r.res_tr_id) max_seatnums ON t.tr_id=max_seatnums.res_tr_id " +
+                    "GROUP BY b.br_code; ";
 
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
             try
             {
-                info.add("Branch Code\tWorker Name\tWorker Last Name\tWorker Salary\tBranch Salaries Sum");
+                info.add("Branch Code\tStreet\t\tBranch Number\t\tCity\tManager Name\tManager Last Name\tReserved Seats\tTotal Income");
                 while(resultSet.next())
                 {
-                    String currInfo = resultSet.getString("b.br_code")+",\t"+
+                    String currInfo = resultSet.getString("b.br_code")+"\t"+
                             String.format("%-"+ 30 + "s", resultSet.getString("b.br_street"))+"\t"+
-                            resultSet.getString("b.br_num")+"\t"+
+                            resultSet.getString("b.br_num")+"\t\t"+
                             resultSet.getString("b.br_city")+"\t"+
-                            resultSet.getString("admin_name")+"\t"+
-                            resultSet.getString("admin_lastname")+"\t"+
-                            resultSet.getString("total_reservations")+"\t"+
-                            resultSet.getString("total_income");
+                            resultSet.getString("w.wrk_name")+"\t"+
+                            resultSet.getString("w.wrk_lname")+"\t\t"+
+                            resultSet.getString("Reserved Seats")+"\t\t"+
+                            resultSet.getString("Total Income");
 
                     info.add(currInfo);
                 }
