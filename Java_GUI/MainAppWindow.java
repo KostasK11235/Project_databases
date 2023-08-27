@@ -30,6 +30,7 @@ public class MainAppWindow extends JFrame {
         JButton branchWorkersButton = new JButton("BRANCH WORKERS INFO");
         JButton newITButton = new JButton("INSERT NEW IT");
         JButton itLogsButton = new JButton("SHOW IT LOGS");
+        JButton advanceFeeRange = new JButton("CUSTOMER BY ADVANCE FEE");
 
         // Add buttons to the main panel
         mainPanel.add(insertButton);
@@ -41,6 +42,7 @@ public class MainAppWindow extends JFrame {
         mainPanel.add(branchWorkersButton);
         mainPanel.add(newITButton);
         mainPanel.add(itLogsButton);
+        mainPanel.add(advanceFeeRange);
 
         // Insert data in tables Button Action Listener
         insertButton.addActionListener(new ActionListener() {
@@ -154,6 +156,17 @@ public class MainAppWindow extends JFrame {
                 // TODO: Perform DELETE FROM TABLE action
                 List<String> logs = getITLogsFromDatabase();
                 openResultScreen(logs);
+            }
+        });
+
+        advanceFeeRange.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO: Get the customers names and last names within given range
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() { new getCustomersByAdvance().setVisible(true); }
+                    });
             }
         });
 

@@ -14,7 +14,7 @@ public class InsertCustNameWindow extends JFrame
     private JButton searchButton;
 
     public InsertCustNameWindow() {
-        setTitle("Enter customer last name for search:");
+        setTitle("Enter customers last name for search:");
         setSize(400, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -84,12 +84,14 @@ public class InsertCustNameWindow extends JFrame
                 }
                 else if(resultSetSize>1)
                 {
-                    participation.add("Trip Offer Code\tTotal People");
+                    participation.add("Customer Name\tCustomer Last Name\tTrip Offer Code\t#Customers per code");
                     resultSet.beforeFirst();	// Move the cursor back to the beginning
                     while(resultSet.next())
                     {
-                        String participant = resultSet.getInt("trip_offer_code") + "\t"
-                                + resultSet.getInt("total_people");
+                        String participant = resultSet.getString("r.cust_name") + "\t\t" +
+                                resultSet.getString("r.cust_lname") + "\t\t" +
+                                resultSet.getInt("r.trip_offer_code") + "\t" +
+                                resultSet.getInt("grouped.total");
 
                         participation.add(participant);
                     }
