@@ -151,6 +151,7 @@ public class DeleteWorker extends JFrame {
                             }
                         }
 
+                        statement.close();
                         statement1.close();
                         connection.close();
                     } catch (SQLException ex) {
