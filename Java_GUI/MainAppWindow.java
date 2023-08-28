@@ -12,7 +12,7 @@ import java.util.List;
 public class MainAppWindow extends JFrame {
     public MainAppWindow(String loggedUser) {
         setTitle("Main Application Window");
-        setSize(600, 400);
+        setSize(900, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 

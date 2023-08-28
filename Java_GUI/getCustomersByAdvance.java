@@ -44,15 +44,22 @@ public class getCustomersByAdvance extends JFrame
                 String base = field1.getText();
                 String ceil = field2.getText();
 
-                if(Double.parseDouble(base) < Double.parseDouble(ceil))
+                if(base.length() == 0 || ceil.length() == 0)
                 {
-                    String temp = base;
-                    base = ceil;
-                    ceil = temp;
+                    JOptionPane.showMessageDialog(null, "Base and Ceil fields can not be empty!");
                 }
+                else
+                {
+                    if(Double.parseDouble(base) > Double.parseDouble(ceil))
+                    {
+                        String temp = base;
+                        base = ceil;
+                        ceil = temp;
+                    }
 
-                List<String> customers = searchCustomers(base, ceil);
-                new ResultScreen(customers).setVisible(true);
+                    List<String> customers = searchCustomers(base, ceil);
+                    new ResultScreen(customers).setVisible(true);
+                }
             }
         });
 
@@ -81,13 +88,13 @@ public class getCustomersByAdvance extends JFrame
             {
                 ResultSet resultSet = callStmt.getResultSet();
 
-                customers.add("Customer Name\tCustomer Last Name");
+                customers.add("Reservation Code\tCustomer Name\tCustomer Last Name");
 
                 while(resultSet.next())
                 {
-                    String participant = resultSet.getString("Customer Name") + "\t" +
+                    String participant = resultSet.getString("res_offer_code") + "\t\t" +
+                            resultSet.getString("Customer Name") + "\t\t" +
                             resultSet.getString("Customer Last Name");
-
                     customers.add(participant);
                 }
             }
