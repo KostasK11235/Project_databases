@@ -181,3 +181,27 @@ BEGIN
 END$
 
 DELIMITER ;
+
+
+// trigger that checks if a worker has reached max number of misconducts(5) and adds them to 
+// blacklist
+
+DELIMITER $
+
+CREATE TRIGGER blacklist_worker
+AFTER INSERT ON misconducts
+FOR EACH ROW
+BEGIN
+	DECLARE misconducts_counter INT;
+	
+
+	SELECT COUNT(*) INTO misconducts_counter FROM misconducts 
+	WHERE msc_wrk_AT=NEW.msc_wrk_AT;
+
+	IF misconducts_counter >=5 THEN
+		INSERT INTO blacklist VALUES
+		(NEW.msc_wrk_AT, '5 WORK MISCONDUCTS');
+	END IF;
+END$
+
+DELIMITER ;

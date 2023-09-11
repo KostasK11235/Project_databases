@@ -46,7 +46,6 @@ public class DeleteAdmin extends JFrame{
                 {
                     String[] parts = selected.split(",");
                     admAT = parts[0];
-                    System.out.println("AT "+ admAT);
                 }
                 else
                 {

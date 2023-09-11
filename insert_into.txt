@@ -1,15 +1,15 @@
 # INSERT INTO TABLES
 INSERT INTO branch VALUES
-(1111,'Piccadilly Circus 12',1,'London'),
-(1112,'Leicester Square 3',2,'London'),
-(1113,'Brick Lane 17',3,'London'),
-(1114,'Trafalgar Square 9',4,'London'),
-(1115,'Oxford Road 1',5,'Manchester'),
-(1116,'Portland Street 22',6,'Manchester'),
-(1117,'Albert Road 71',7,'Birmingham'),
+(1111,'Piccadilly Circus',12,'London'),
+(1112,'Leicester Square',3,'London'),
+(1113,'Brick Lane',17,'London'),
+(1114,'Trafalgar Square',9,'London'),
+(1115,'Oxford Road',1,'Manchester'),
+(1116,'Portland Street',22,'Manchester'),
+(1117,'Albert Road',71,'Birmingham'),
 (1118,'Allesley Street',8,'Birmingham'),
-(1119,'Amberley Grove 11',9,'Birmingham'),
-(1120,'Hanover Close 36',10,'Birmingham');
+(1119,'Amberley Grove',11,'Birmingham'),
+(1120,'Hanover Close',36,'Birmingham');
 
 INSERT INTO phones VALUES
 (1111,'2075805510'),

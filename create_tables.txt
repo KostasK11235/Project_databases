@@ -163,3 +163,20 @@ action VARCHAR(255),
 table_name VARCHAR(255),
 log_date DATETIME,
 PRIMARY KEY (log_id));
+
+// we want to create 2 tables: 1 for work misconduct and 1 for blacklisting, for workers
+// only drivers or guides can be reported
+
+CREATE TABLE misconducts(
+msc_code INT AUTO_INCREMENT,
+msc_wrk_AT CHAR(10) NOT NULL,
+msc_wrk_name VARCHAR(20) NOT NULL,
+msc_wrk_lname VARCHAR(20) NOT NULL,
+msc_wrk_branch INT(11) NOT NULL,
+msc_descr TEXT,
+PRIMARY KEY(msc_code));
+
+CREATE TABLE blacklist(
+blk_wrk_AT CHAR(10) NOT NULL,
+blk_info TEXT,
+PRIMARY KEY(blk_wrk_AT));

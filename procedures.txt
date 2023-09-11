@@ -95,13 +95,14 @@ END$
 DELIMITER ;
 
 3.1.3.4
-α)
+α) Προσθέσαμε να επιστρέφει και τον κωδικό κράτησης για καλύτερη αναγνωσιμότητα
 DELIMITER $
 CREATE PROCEDURE get_Res_Offers_Names(IN from_amount FLOAT,IN to_amount FLOAT)
 BEGIN
-	SELECT cust_name AS 'Customer Name',cust_lname AS 'Customer Last Name'
+	SELECT res_offer_code,cust_name AS 'Customer Name',cust_lname AS 'Customer Last Name'
 	FROM reservation_offers
-	WHERE advance_fee>=from_amount AND advance_fee<=to_amount;
+	WHERE advance_fee>=from_amount AND advance_fee<=to_amount
+	ORDER BY res_offer_code;
 END $
 
 DELIMITER ;
@@ -122,12 +123,58 @@ BEGIN
     FROM reservation_offers
     WHERE cust_lname = input_last_name;
   ELSE
-    SELECT trip_offer_code, COUNT(*) AS total_people
-    FROM reservation_offers
-    WHERE cust_lname = input_last_name
-    GROUP BY trip_offer_code;
+	SELECT r.cust_name,r.cust_lname,r.trip_offer_code,grouped.total
+	FROM reservation_offers r 
+	RIGHT JOIN (SELECT COUNT(*) AS total,cust_lname AS lname FROM reservation_offers 
+	WHERE cust_lname=input_last_name GROUP BY trip_offer_code) AS grouped 
+	ON r.cust_lname=grouped.lname
+	ORDER BY r.trip_offer_code;
   END IF;
 
+END $
+
+DELIMITER ;
+
+// Procedure that takes as argument a workers AT who has been blacklisted and delete that worker and clear his misconducts records
+
+DELIMITER $
+
+CREATE PROCEDURE delete_worker(IN wrkAT CHAR(10))
+BEGIN
+	DECLARE drvAT CHAR(10);
+	DECLARE guiAT CHAR(10);
+	DECLARE newGuide CHAR(10);
+	DECLARE newDriver CHAR(10);
+	DECLARE existsInTrip INT;
+
+	SELECT COUNT(*) INTO existsInTrip FROM trip WHERE tr_gui_AT=wrkAT OR tr_drv_AT=wrkAT;
+	
+	IF existsInTrip>0 THEN
+		SELECT drv_AT INTO drvAT FROM driver WHERE drv_AT=wrkAT;
+		SELECT gui_AT INTO guiAT FROM guide WHERE gui_AT=wrkAT;
+
+		IF(drvAT IS NULL) THEN 
+			SELECT w.wrk_AT INTO newGuide FROM worker w LEFT JOIN guide g on w.wrk_AT=g.gui_AT WHERE (g.gui_AT IS NOT NULL) AND w.wrk_AT NOT IN (SELECT tr_gui_AT FROM trip) LIMIT 0,1;
+		
+			IF(newGuide IS NOT NULL) THEN
+				UPDATE trip SET tr_gui_AT=newGuide WHERE tr_gui_AT=wrkAT;
+				DELETE FROM misconducts WHERE msc_wrk_AT=wrkAT;
+				DELETE FROM worker WHERE wrk_AT=wrkAT;
+			END IF;
+		ELSEIF(guiAT IS NULL) THEN
+			SELECT w.wrk_AT INTO newDriver FROM worker w LEFT JOIN driver d on w.wrk_AT=d.drv_AT WHERE (d.drv_AT IS NOT NULL) AND w.wrk_AT NOT IN (SELECT tr_drv_AT FROM trip) LIMIT 0,1;
+		
+			IF(newDriver IS NOT NULL) THEN
+				UPDATE trip SET tr_drv_AT=newDriver WHERE tr_drv_AT=wrkAT;
+				DELETE FROM misconducts WHERE msc_wrk_AT=wrkAT;
+				DELETE FROM worker WHERE wrk_AT=wrkAT;
+			END IF;
+		END IF;
+	ELSE
+		DELETE FROM misconducts WHERE msc_wrk_AT=wrkAT;
+		DELETE FROM worker WHERE wrk_AT=wrkAT;
+	END IF;
+	
 END $
 
 DELIMITER ;
