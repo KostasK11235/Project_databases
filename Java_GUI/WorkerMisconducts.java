@@ -9,6 +9,7 @@ public class WorkerMisconducts extends JFrame {
     private JTextField field1;
     private JComboBox<String> dropdownList1;
     private JButton insertButton;
+    private JButton misconductsButton;
 
     public WorkerMisconducts() {
         setTitle("Report a worker's misconduct: ");
@@ -37,6 +38,9 @@ public class WorkerMisconducts extends JFrame {
         insertButton = new JButton("Report");
         panel.add(insertButton);
 
+        misconductsButton = new JButton("Show Misconducts");
+        panel.add(misconductsButton);
+
         insertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -54,6 +58,15 @@ public class WorkerMisconducts extends JFrame {
 
                 String reportMisconductStatus = reportFunction(workerAT, branch, name, lastname, descr);
                 JOptionPane.showMessageDialog(null, reportMisconductStatus);
+            }
+        });
+
+        misconductsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO: Perform DELETE FROM TABLE action
+                List<String> logs = getMisconducts();
+                openResultScreen(logs);
             }
         });
 
@@ -79,38 +92,43 @@ public class WorkerMisconducts extends JFrame {
             int rowsAffected = statement.executeUpdate();
 
             if (rowsAffected > 0)
+            {
                 insertStatus = "Report has been added to misconducts table!";
 
-            // Select the workers AT from blacklist where they have records in table misconducts so we can erase those records
-            List<String> returnedWorkers = new ArrayList<>();
+                // Select the workers AT from blacklist where they have records in table misconducts, so we can erase those records
+                List<String> returnedWorkers = new ArrayList<>();
 
-            sql = "SELECT b.blk_wrk_AT FROM blacklist b INNER JOIN misconducts m ON m.msc_wrk_AT=b.blk_wrk_AT";
-            statement = connection.prepareStatement(sql);
+                sql = "SELECT b.blk_wrk_AT FROM blacklist b INNER JOIN misconducts m ON m.msc_wrk_AT=b.blk_wrk_AT";
+                statement = connection.prepareStatement(sql);
 
-            ResultSet resultSet = statement.executeQuery();
+                ResultSet resultSet = statement.executeQuery();
 
-            while(resultSet.next())
-            {
-                returnedWorkers.add(resultSet.getString("b.blk_wrk_AT"));
+                while(resultSet.next())
+                {
+                    returnedWorkers.add(resultSet.getString("b.blk_wrk_AT"));
 
-            }
-
-            String[] blacklisted = returnedWorkers.toArray(new String[returnedWorkers.size()]);
-
-            for(String person: blacklisted)
-            {
-                CallableStatement callableStatement = connection.prepareCall("{CALL delete_worker(?)}");
-                callableStatement.setString(1, person);
-
-                boolean hasResultSet = callableStatement.execute();
-                if (!hasResultSet) {
-                    rowsAffected = callableStatement.getUpdateCount();
-                    if (rowsAffected > 4) {
-                        insertStatus = "Worker has been deleted from worker table!";
-                    }
                 }
 
-                callableStatement.close();
+                String[] blacklisted = returnedWorkers.toArray(new String[returnedWorkers.size()]);
+
+                for(String person: blacklisted)
+                {
+                    CallableStatement callableStatement = connection.prepareCall("{CALL delete_worker(?)}");
+                    callableStatement.setString(1, person);
+
+                    boolean hasResultSet = callableStatement.execute();
+                    if (!hasResultSet) {
+                        rowsAffected = callableStatement.getUpdateCount();
+                        if (rowsAffected > 4) {
+                            insertStatus = "Worker has been deleted from worker table!";
+                        }
+                    }
+
+                    callableStatement.close();
+                }
+            }
+            else {
+                insertStatus = "Can not add a report for a worker who is already on blacklist!";
             }
 
             statement.close();
@@ -161,10 +179,57 @@ public class WorkerMisconducts extends JFrame {
         return workers.toArray(new String[workers.size()]);
     }
 
-    public static void main(String[] args) {
+    private List<String> getMisconducts()
+    {
+        List<String> misconducts = new ArrayList<>();
+
+        // Database connection and query
+        String url = "jdbc:mariadb://localhost:3306/project";
+        String dbUsername = "root";
+        String dbPassword = "";
+
+        try
+        {
+            Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
+            String sql = "SELECT msc_code,msc_wrk_AT,msc_wrk_name,msc_wrk_lname,msc_wrk_branch,msc_descr FROM misconducts";
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            try
+            {
+                misconducts.add("Log Code\tWorker AT\tName\tLastname\tBranch\tDescription");
+                while(resultSet.next())
+                {
+                    String currLog = resultSet.getString("msc_code")+"\t"+
+                            resultSet.getString("msc_wrk_AT")+"\t"+
+                            resultSet.getString("msc_wrk_name")+"\t"+
+                            resultSet.getString("msc_wrk_lname")+"\t"+
+                            resultSet.getString("msc_wrk_branch")+"\t"+
+                            resultSet.getString("msc_descr");
+
+                    misconducts.add(currLog);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return misconducts;
+    }
+
+    private void openResultScreen(List<String> results)
+    {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void run() { new WorkerMisconducts().setVisible(true);
+            public void run() {
+                new ResultScreen(results).setVisible(true);
             }
         });
     }

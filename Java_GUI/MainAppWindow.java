@@ -9,7 +9,7 @@ import java.util.List;
 public class MainAppWindow extends JFrame {
     public MainAppWindow(String loggedUser) {
         setTitle("Main Application Window");
-        setSize(900, 400);
+        setSize(920, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -29,6 +29,7 @@ public class MainAppWindow extends JFrame {
         JButton itLogsButton = new JButton("SHOW IT LOGS");
         JButton advanceFeeRange = new JButton("CUSTOMER BY ADVANCE FEE");
         JButton popularDestination = new JButton("MOST POPULAR DESTINATION");
+        JButton misconducts = new JButton("WORKERS MISCONDUCTS");
 
         // Add buttons to the main panel
         mainPanel.add(insertButton);
@@ -42,6 +43,7 @@ public class MainAppWindow extends JFrame {
         mainPanel.add(itLogsButton);
         mainPanel.add(advanceFeeRange);
         mainPanel.add(popularDestination);
+        mainPanel.add(misconducts);
 
         // Insert data in tables Button Action Listener
         insertButton.addActionListener(new ActionListener() {
@@ -175,6 +177,17 @@ public class MainAppWindow extends JFrame {
                 // TODO: Perform DELETE FROM TABLE action
                 List<String> countries = getPreferredDestinations();
                 openResultScreen(countries);
+            }
+        });
+
+        misconducts.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO: Insert a worker's misconduct
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() { new WorkerMisconducts().setVisible(true); }
+                });
             }
         });
 

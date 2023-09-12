@@ -193,15 +193,50 @@ AFTER INSERT ON misconducts
 FOR EACH ROW
 BEGIN
 	DECLARE misconducts_counter INT;
-	
+	DECLARE name VARCHAR(10);
+	DECLARE last_name VARCHAR(10);
 
-	SELECT COUNT(*) INTO misconducts_counter FROM misconducts 
+	SELECT COUNT(*),msc_wrk_name,msc_wrk_lname INTO misconducts_counter,name,last_name FROM misconducts 
 	WHERE msc_wrk_AT=NEW.msc_wrk_AT;
 
 	IF misconducts_counter >=5 THEN
 		INSERT INTO blacklist VALUES
-		(NEW.msc_wrk_AT, '5 WORK MISCONDUCTS');
+		(NEW.msc_wrk_AT,name,last_name,'5 WORK MISCONDUCTS');
 	END IF;
 END$
 
 DELIMITER ;
+
+// Two new triggers that check before each insert and update in worker table if the new worker is blacklisted. If true, the update/insert action is prohibited
+DELIMITER $
+
+CREATE TRIGGER check_new_worker_insert
+BEFORE INSERT ON worker
+FOR EACH ROW
+BEGIN
+	DECLARE isBlacklisted INT;
+
+	SELECT COUNT(*) INTO isBlacklisted FROM blacklist WHERE blk_wrk_AT=NEW.wrk_AT;
+
+	IF isBlacklisted>0 THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Unable to insert worker. Worker is blacklisted.';
+	END IF;
+END $
+
+CREATE TRIGGER check_report_insert
+BEFORE INSERT ON misconducts
+FOR EACH ROW
+BEGIN
+	DECLARE blacklisted INT;
+
+	SELECT COUNT(*) INTO blacklisted FROM blacklist WHERE blk_wrk_AT=NEW.msc_wrk_AT;
+
+	IF blacklisted>0 THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Unable to file report. Worker is blacklisted.';
+	END IF;
+END $
+
+DELIMITER ;
+

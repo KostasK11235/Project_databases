@@ -150,7 +150,7 @@ trip_offer_code INT(10) NOT NULL,
 advance_fee FLOAT(7,2) NOT NULL,
 PRIMARY KEY(res_offer_code),
 FOREIGN KEY (trip_offer_code) REFERENCES offers (offer_code)
-ON DELETE CASCADE ON UPDATE CASCADE); 
+ON DELETE CASCADE ON UPDATE CASCADE) ENGINE = MEMORY; 
 
 CREATE INDEX money ON reservation_offers(advance_fee);
 CREATE INDEX idx_cust_lname ON reservation_offers(cust_lname);
@@ -178,5 +178,7 @@ PRIMARY KEY(msc_code));
 
 CREATE TABLE blacklist(
 blk_wrk_AT CHAR(10) NOT NULL,
+blk_name VARCHAR(10) NOT NULL,
+blk_lname VARCHAR(10) NOT NULL,
 blk_info TEXT,
 PRIMARY KEY(blk_wrk_AT));
