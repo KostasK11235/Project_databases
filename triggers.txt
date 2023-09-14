@@ -150,7 +150,6 @@ BEGIN
     END IF;
 END $
 
-
 3.1.4.2
 DELIMITER $
 
@@ -158,26 +157,10 @@ CREATE TRIGGER prevent_salary_reduction
 BEFORE UPDATE ON worker
 FOR EACH ROW
 BEGIN
-	DECLARE salary FLOAT(7,2);
-	DECLARE finishedFlag INT;
-
-	DECLARE salaryCursor CURSOR FOR
-		SELECT wrk_salary FROM worker WHERE wrk_salary=OLD.wrk_salary;
-	
-	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedFlag=1;
-	
-	OPEN salaryCursor;
-	SET finishedFlag=0;
-
-	FETCH salaryCursor INTO salary;
-	WHILE (finishedFlag=0) DO
-		IF (NEW.wrk_salary<salary) THEN
-			SIGNAL SQLSTATE '45000'
-				SET MESSAGE_TEXT='Can not reduce worker salary.';
-		END IF;
-		FETCH salaryCursor INTO salary;
-	END WHILE;
-	CLOSE salaryCursor;
+	IF(OLD.wrk_salary > NEW.wrk_salary) THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT='Can not reduce worker salary!';
+	END IF;
 END$
 
 DELIMITER ;
