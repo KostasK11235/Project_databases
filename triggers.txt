@@ -182,6 +182,39 @@ END$
 
 DELIMITER ;
 
+// triggers for when we insert,delete,update a record in reservation_offers, the same happens in reservation_offers_memory
+
+DELIMITER $
+
+CREATE TRIGGER insert_into_memory_table
+AFTER INSERT ON reservation_offers
+FOR EACH ROW
+BEGIN
+    INSERT INTO reservation_offers_memory (res_offer_code, cust_name, cust_lname, trip_offer_code, advance_fee)
+    VALUES (NEW.res_offer_code, NEW.cust_name, NEW.cust_lname, NEW.trip_offer_code, NEW.advance_fee);
+END $
+
+CREATE TRIGGER delete_from_memory_table
+AFTER DELETE ON reservation_offers
+FOR EACH ROW
+BEGIN
+    DELETE FROM reservation_offers_memory WHERE res_offer_code = OLD.res_offer_code;
+END $
+
+CREATE TRIGGER update_memory_table
+AFTER UPDATE ON reservation_offers
+FOR EACH ROW
+BEGIN
+    UPDATE reservation_offers_memory
+    SET
+        cust_name = NEW.cust_name,
+        cust_lname = NEW.cust_lname,
+        trip_offer_code = NEW.trip_offer_code,
+        advance_fee = NEW.advance_fee
+    WHERE res_offer_code = OLD.res_offer_code;
+END $
+
+DELIMITER ;
 
 // trigger that checks if a worker has reached max number of misconducts(5) and adds them to 
 // blacklist

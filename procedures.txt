@@ -65,6 +65,7 @@ BEGIN
 END$
 
 3.1.3.3 Procedure for removing an admin worker if he is not a manager
+// Κάνουμε την παραδοχή οτι κάθε worker που ανήκει στο admin προσωπικό με τύπο 'ADMINISTRATIVE', θα διοικεί και ένα απο τα υποκαταστήματα, σε αντίθεση με τους driver,guide οι οποίοι μπορεί να μην ορίζονται σε κάποιο ταξίδι απαραίτητα.
 
 DELIMITER $
 CREATE PROCEDURE del_admin(IN name VARCHAR(20),IN lname VARCHAR(20))
@@ -100,7 +101,7 @@ DELIMITER $
 CREATE PROCEDURE get_Res_Offers_Names(IN from_amount FLOAT,IN to_amount FLOAT)
 BEGIN
 	SELECT res_offer_code,cust_name AS 'Customer Name',cust_lname AS 'Customer Last Name'
-	FROM reservation_offers
+	FROM reservation_offers_memory
 	WHERE advance_fee>=from_amount AND advance_fee<=to_amount
 	ORDER BY res_offer_code;
 END $
@@ -115,17 +116,16 @@ BEGIN
   DECLARE total_count INT;
   
   SELECT COUNT(*) INTO total_count
-  FROM reservation_offers
-  WHERE cust_lname = input_last_name
-  GROUP BY cust_lname;
+  FROM reservation_offers_memory
+  WHERE cust_lname = input_last_name;
   IF total_count=1 THEN
     SELECT cust_name, cust_lname, trip_offer_code
-    FROM reservation_offers
+    FROM reservation_offers_memory
     WHERE cust_lname = input_last_name;
   ELSE
 	SELECT r.cust_name,r.cust_lname,r.trip_offer_code,grouped.total
-	FROM reservation_offers r 
-	RIGHT JOIN (SELECT COUNT(*) AS total,cust_lname AS lname FROM reservation_offers 
+	FROM reservation_offers_memory r 
+	RIGHT JOIN (SELECT COUNT(*) AS total,cust_lname AS lname FROM reservation_offers_memory
 	WHERE cust_lname=input_last_name GROUP BY trip_offer_code) AS grouped 
 	ON r.cust_lname=grouped.lname
 	ORDER BY r.trip_offer_code;

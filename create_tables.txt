@@ -150,10 +150,20 @@ trip_offer_code INT(10) NOT NULL,
 advance_fee FLOAT(7,2) NOT NULL,
 PRIMARY KEY(res_offer_code),
 FOREIGN KEY (trip_offer_code) REFERENCES offers (offer_code)
+ON DELETE CASCADE ON UPDATE CASCADE); 
+
+CREATE TABLE reservation_offers_memory(
+res_offer_code INT(12) NOT NULL,
+cust_name VARCHAR(20) NOT NULL,
+cust_lname VARCHAR(20) NOT NULL,
+trip_offer_code INT(10) NOT NULL,
+advance_fee FLOAT(7,2) NOT NULL,
+PRIMARY KEY(res_offer_code),
+FOREIGN KEY (trip_offer_code) REFERENCES offers (offer_code)
 ON DELETE CASCADE ON UPDATE CASCADE) ENGINE = MEMORY; 
 
-CREATE INDEX idx_advance_fee ON reservation_offers(advance_fee) USING BTREE; 
-CREATE INDEX idx_cust_lname ON reservation_offers(cust_lname) USING HASH;
+CREATE INDEX idx_advance_fee ON reservation_offers_memory(advance_fee) USING BTREE; 
+CREATE INDEX idx_cust_lname ON reservation_offers_memory(cust_lname) USING HASH;
 
 /* Το IT_id είναι απλά ένα attribute του πίνακα ώστε να μπορούμε να διαγράψουμε έναν worker χωρίς να διαγράφεται και όποια καταγραφή του πίνακα it_logs με αυτό το wrk_id (πετάει errors αν δεν το κάνουμε έτσι */
 CREATE TABLE IT_logs(
