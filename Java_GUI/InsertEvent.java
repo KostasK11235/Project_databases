@@ -33,12 +33,12 @@ public class InsertEvent extends JFrame{
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel);
 
-        String[] evIDs = getEventIDs();
+        String[] evTrIDs = getEventTrIDs();
 
         JLabel evTrId = new JLabel("Event Trip ID:");
         panel.add(evTrId);
 
-        dropdownList1 = new JComboBox<>(evIDs);
+        dropdownList1 = new JComboBox<>(evTrIDs);
         panel.add(dropdownList1);
 
         // Create date fields with drop-down lists
@@ -139,7 +139,7 @@ public class InsertEvent extends JFrame{
         return insertStatus;
     }
 
-    private String[] getEventIDs()
+    private String[] getEventTrIDs()
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";

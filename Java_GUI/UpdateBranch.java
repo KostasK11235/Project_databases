@@ -8,6 +8,7 @@ import java.util.List;
 public class UpdateBranch extends JFrame{
     private JTextField field1;
     private JTextField field2;
+    private JTextField field3;
     private JComboBox<String> dropdownList1;
     private JButton updateButton;
     private JButton helpButton;
@@ -44,6 +45,12 @@ public class UpdateBranch extends JFrame{
         field2 = new JTextField(15);
         panel.add(field2);
 
+        JLabel brNum = new JLabel("Number:");
+        panel.add(brNum);
+
+        field3 = new JTextField(15);
+        panel.add(field3);
+
         helpButton = new JButton("Help");
         panel.add(helpButton);
 
@@ -56,8 +63,9 @@ public class UpdateBranch extends JFrame{
                 String branch = (String) dropdownList1.getSelectedItem();
                 String street = field1.getText();
                 String city = field2.getText();
+                String number = field3.getText();
 
-                String updateBranchStatus = updateBranchFunction(branch, street, city);
+                String updateBranchStatus = updateBranchFunction(branch, street, city, number);
                 JOptionPane.showMessageDialog(null, updateBranchStatus);
             }
         });
@@ -74,7 +82,7 @@ public class UpdateBranch extends JFrame{
         });
     }
 
-    private String updateBranchFunction(String brCode, String street, String city)
+    private String updateBranchFunction(String brCode, String street, String city, String number)
     {
         String url = "jdbc:mariadb://localhost:3306/project";
         String dbUsername = "root";
@@ -84,11 +92,12 @@ public class UpdateBranch extends JFrame{
 
         try {
             Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword);
-            String sql = "UPDATE branch SET br_street=?,br_num=? WHERE br_code=?";
+            String sql = "UPDATE branch SET br_street=?,br_num=?,br_city=? WHERE br_code=?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, street);
-            statement.setString(2, city);
-            statement.setString(3, brCode);
+            statement.setString(2, number);
+            statement.setString(3, city);
+            statement.setString(4, brCode);
 
             int rowsAffected = statement.executeUpdate();
 
