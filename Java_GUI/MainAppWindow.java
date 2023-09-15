@@ -101,7 +101,6 @@ public class MainAppWindow extends JFrame {
             }
         });
 
-        // Πρέπει να βάλουμε και την πρώτη procedure απο το 3.1.3.4. a)
         // Get customer(s) data from reservation_offers Button Action Listener
         getCustomersButton.addActionListener(new ActionListener() {
             @Override

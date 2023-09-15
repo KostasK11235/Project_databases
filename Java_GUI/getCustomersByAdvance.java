@@ -16,7 +16,7 @@ public class getCustomersByAdvance extends JFrame
 
     public getCustomersByAdvance() {
         setTitle("Enter two numbers to search in that range:");
-        setSize(400, 150);
+        setSize(420, 150);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 

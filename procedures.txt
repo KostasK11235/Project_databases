@@ -41,11 +41,11 @@ BEGIN
 	DECLARE finishedFlag INT;
 	DECLARE tripCursor CURSOR FOR
 		SELECT t.tr_cost,t.tr_maxseats,MAX(r.res_seatnum),w.wrk_name,w.wrk_lname,w2.wrk_name,w2.wrk_lname,t.tr_departure,t.tr_return 			FROM trip AS t
-		INNER JOIN reservation AS r ON r.res_tr_id=t.tr_id
-		INNER JOIN driver AS d ON d.drv_AT=t.tr_drv_AT
-		INNER JOIN guide AS g ON g.gui_AT=t.tr_gui_AT
-		INNER JOIN worker AS w ON w.wrk_AT=d.drv_AT
-		INNER JOIN worker AS w2 ON w2.wrk_AT=g.gui_AT
+		LEFT JOIN reservation AS r ON r.res_tr_id=t.tr_id
+		LEFT JOIN driver AS d ON d.drv_AT=t.tr_drv_AT
+		LEFT JOIN guide AS g ON g.gui_AT=t.tr_gui_AT
+		LEFT JOIN worker AS w ON w.wrk_AT=d.drv_AT
+		LEFT JOIN worker AS w2 ON w2.wrk_AT=g.gui_AT
 		WHERE t.tr_br_code=branch AND (t.tr_departure>=from_date AND t.tr_departure<=to_date) GROUP BY r.res_tr_id;
 	
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedFlag=1;

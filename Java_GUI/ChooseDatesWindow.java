@@ -156,14 +156,14 @@ public class ChooseDatesWindow extends JFrame {
 
                 boolean hasResultSet = callStmt.execute();
 
-                if(hasResultSet)
+                while(hasResultSet)
                 {
                     ResultSet resultSet2 = callStmt.getResultSet();
-                    String currTrip = String.valueOf(branch_code);
                     try
                     {
                         while(resultSet2.next())
                         {
+                            String currTrip = String.valueOf(branch_code);
                             currTrip += "\t" + resultSet2.getFloat("Trip Cost") + "\t" +
                                     resultSet2.getInt("#Seats") + "\t" +
                                     resultSet2.getInt("#Researved Seats") + "\t\t" +
@@ -182,6 +182,7 @@ public class ChooseDatesWindow extends JFrame {
                     {
                         e.printStackTrace();
                     }
+                    hasResultSet = callStmt.getMoreResults();
                 }
             }
         }

@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.regex.*;
 
 public class InsertNewITWindow extends JFrame
 {
@@ -62,8 +63,24 @@ public class InsertNewITWindow extends JFrame
                 String it_lname = lnameField.getText();
                 String it_salary = salaryField.getText();
 
-                String createITStatus = createIT(it_at,it_name,it_lname,it_salary, loggedUser);
-                JOptionPane.showMessageDialog(null, createITStatus);
+                // Define the expression pattern
+                String pattern = "AT\\d+";  // \\d+ matches one or more digits
+
+                // Create a Pattern object
+                Pattern regexPattern = Pattern.compile(pattern);
+
+                // Create a Matcher object
+                Matcher matcher = regexPattern.matcher(it_at.toUpperCase());
+
+                if(matcher.matches())
+                {
+                    String createITStatus = createIT(it_at.toUpperCase(),it_name,it_lname,it_salary, loggedUser);
+                    JOptionPane.showMessageDialog(null, createITStatus);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "IT_AT must be in form: ATxxx, where xxx are numbers (up to 8 numbers)");
+                }
             }
         });
     }
