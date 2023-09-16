@@ -1,5 +1,3 @@
-# cross check again
-
 CREATE TABLE branch(
 br_code INT(11) NOT NULL AUTO_INCREMENT,
 br_street VARCHAR(30) NOT NULL,
@@ -121,8 +119,6 @@ PRIMARY KEY(ev_tr_id,ev_start),
 FOREIGN KEY(ev_tr_id) REFERENCES trip (tr_id) 
 ON DELETE CASCADE ON UPDATE CASCADE);
 
-/* Μπορούμε να έχουμε πάνω απο έναν IT την ίδια χρονική περίοδο */
-/* end_date είναι για όσους έχουν φύγει απο το πρακτορείο */
 CREATE TABLE IT(
 IT_AT CHAR(10) NOT NULL,
 password VARCHAR(10) DEFAULT 'password' NOT NULL,
